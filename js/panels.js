@@ -384,7 +384,7 @@ export function buildShow() {
       <p><b>Type</b>: Marcellus by Astigmatic; Geist by Vercel; Cinzel by Natanael Gama; Cormorant Garamond by Christian Thalmann; Malayalam in Manjari
         by Santhosh Thottingal and Rachana by Hussain K. H. and Rachana Akshara Vedi (Swathanthra Malayalam Computing).
         All under the SIL Open Font License.</p>
-      <p><a href="CREDITS.md" target="_blank" rel="noopener">Full credits</a></p>
+      <p><a href="CREDITS.md" target="_blank" rel="noopener">Full credits</a> · <a href="https://github.com/iamr7d/silhouette-ai" target="_blank" rel="noopener">Source code on GitHub</a> (MIT)</p>
     </div>
   </div>`;
 }
