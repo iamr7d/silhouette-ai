@@ -69,59 +69,75 @@ REEL = [
 ]
 
 
-# Rahulraj's own Malayalam reading of the Reel (film/vo/ml/take.m4a, script in film/voiceover-malayalam.md). It runs
-# longer than the English, so the Reel is cut to it: (file, start, end, hold at the end) and each line's place.
+# Rahulraj's own Malayalam narration (film/vo/ml/take.m4a; what he says, with an English translation, is in
+# film/vo/ml/transcript.json). It is used as recorded, sentence by sentence at the moment it was said, and the pictures
+# are cut to what each sentence is about: (file, start, end, hold at the end).
 ML_TAKE = VO / "ml" / "take.m4a"
-REEL_ML_CUTS = [
-    ("part1.mp4", 0.0, 19.5, 0),
-    ("demo_vertical_nocap.mp4", 14.0, 17.8, 0),  # the show playing on the timeline
-    ("demo_vertical_nocap.mp4", 18.4, 29.6, 0),  # Hanuman from the library, dragged across the cloth
-    ("demo_vertical_nocap.mp4", 30.0, 34.6, 0),  # a ready-made walk
-    ("demo_vertical_nocap.mp4", 45.5, 49.0, 0),  # the lamps
-    ("demo_vertical_nocap.mp4", 35.6, 40.6, 0),  # Ravana pulled off the cloth
-    ("demo_vertical_nocap.mp4", 41.0, 44.6, 0),  # the back view
-    ("demo_vertical_nocap.mp4", 62.0, 68.6, 0),  # Rama cut and turned in 3D
-    ("demo_vertical_nocap.mp4", 70.4, 75.6, 3.0),  # mapping to motors, held while the line ends
-]
-# The same reading over the 16:9 session: the site, then the studio in the order the lines tell it.
-DEMO_ML_CUTS = [
-    ("demo_video_nocap.mp4", 0.0, 13.2, 0),    # the site: the night, the lamps lit by scrolling, Malayalam
-    ("demo_video_nocap.mp4", 13.6, 17.8, 0),   # the show playing on the timeline
-    ("demo_video_nocap.mp4", 18.2, 29.6, 0),   # Hanuman from the library, dragged across the cloth
-    ("demo_video_nocap.mp4", 30.0, 34.6, 0),   # a ready-made walk
-    ("demo_video_nocap.mp4", 45.5, 49.0, 0),   # the lamps
-    ("demo_video_nocap.mp4", 56.0, 59.6, 0),   # the Story's scenes
-    ("demo_video_nocap.mp4", 35.6, 40.6, 0),   # Ravana pulled off the cloth
-    ("demo_video_nocap.mp4", 41.0, 44.6, 0),   # the back view
-    ("demo_video_nocap.mp4", 60.2, 68.6, 0),   # Rama cut and turned in 3D
-    ("demo_video_nocap.mp4", 70.4, 75.6, 2.5),  # mapping to motors, held while the line ends
-]
-DEMO_ML = [(0.6, 0.64, 13.88), (14.4, 14.62, 25.70), (26.0, 26.66, 41.96), (41.7, 42.56, 50.70),
-           (50.3, 51.14, 56.40), (57.4, 56.92, 64.78), (66.0, 65.46, 73.81)]
+# each sentence's start and end in the take, found from the pauses between them
+SENTENCES = [(0.63, 3.50), (3.79, 10.51), (11.22, 13.57), (14.63, 21.83), (22.45, 25.69), (26.65, 32.32),
+             (33.15, 41.94), (42.87, 46.10), (46.45, 50.70), (51.16, 56.39), (56.93, 67.96), (69.39, 73.27)]
+# What is on screen while each sentence (or group of sentences) is said: (file, start, longest it may run). Each
+# group's shots fill the time until the next group begins; nothing is shown twice. Sentences are numbered from 0.
+V, D = "demo_vertical_nocap.mp4", "demo_video_nocap.mp4"
+# The Reel, about a minute: the three sentences that repeat others are left out, the pauses are shortened and the
+# reading runs a little quicker (its pitch kept); the credits are the short ones.
+REEL_ML = dict(keep=[0, 1, 3, 5, 6, 7, 8, 10, 11], tempo=1.06, gap=0.45, credits="_ml_short", plan=[
+    ([0, 1, 3], [("part1.mp4", 0.0, 22.0)]),              # the art, UAL, Vipin chettan and Hooman Samani: the show
+    ([5], [(V, 14.0, 3.8), (V, 18.4, 6.2)]),               # like editing a film: the studio, a figure from the library
+    ([6], [(V, 24.6, 5.0), (V, 45.5, 4.5)]),               # which puppet moves when, which light: keyframes, the lamps
+    ([7], [(V, 62.4, 6.0)]),                               # puppets in 3D
+    ([8], [(V, 70.4, 5.0)]),                               # real puppets and lights through an Arduino
+    ([10], [(V, 41.0, 3.6), (V, 35.6, 5.0), (V, 30.0, 4.6)]),  # not to replace the art: behind the cloth, Ravana, a walk
+    ([11], [(V, 50.5, 5.0)]),                              # happy to collaborate: the lamps coming back up
+])
+# The 16:9 film: every sentence, as it was said, then the full credits.
+DEMO_ML = dict(keep=list(range(12)), tempo=1.0, gap=None, credits="_ml", plan=[
+    ([0, 1, 2], [(D, 0.0, 13.2)]),                         # the art, UAL, coming back to it: the site
+    ([3], [(D, 13.6, 4.2), (D, 30.0, 4.6)]),               # Vipin chettan and Hooman Samani: the studio playing, a walk
+    ([4], [(D, 56.0, 3.6)]),                               # this idea: the Story's scenes
+    ([5], [(D, 18.2, 6.4)]),                               # like editing a film: a figure from the library
+    ([6], [(D, 24.6, 5.0), (D, 45.5, 5.0)]),               # which puppet moves when, which light: keyframes, the lamps
+    ([7], [(D, 62.4, 5.0)]),                               # puppets in 3D
+    ([8], [(D, 70.4, 5.0)]),                               # real puppets and lights through an Arduino
+    ([9], [(D, 35.6, 5.0)]),                               # an open-source studio in the browser
+    ([10], [(D, 41.0, 3.6), (D, 50.5, 5.0), (D, 67.4, 2.2)]),  # not to replace the art
+    ([11], []),                                            # happy to collaborate: over the credits
+])
 
-# English subtitles for the Malayalam lines, a line at a time; a line in parts is shown part by part.
+# English subtitles of what is said, as (start, end) in the take; long sentences in parts, split where he pauses
 SUBS_ML = [
-    ["A few years ago, I set out to make a film about Tholpavakoothu, the shadow puppetry of Kerala.",
-     "The film never happened. But the art never left me."],
-    ["Talking with Vipin Viswanathan Pulavar, one question remained:", "how do we carry this art forward?"],
-    ["That is how I made Silhouette.ai.", "A studio that runs in the browser.",
-     "Every puppet, every lamp and the story, on one timeline."],
-    ["Move a puppet away from the cloth.", "Or watch from behind it."],
-    ["Turn each puppet in 3D, and cut it into parts that move."],
-    ["With the same timeline, move real puppets through motors."],
-    ["Silhouette.ai.", "Open source, for everyone who wants to carry this art forward."],
+    (0.63, 3.50, "Tholpavakoothu is a very old art form, Kerala's own."),
+    (3.79, 6.68, "When I arrived at UAL, I really wanted to connect"),
+    (6.68, 10.51, "an art form from home with technology."),
+    (11.22, 13.57, "That is how I came back to Tholpavakoothu."),
+    (14.63, 18.31, "Then I spoke with Vipin chettan, a master of this art,"),
+    (18.31, 21.83, "and with Hooman Samani, the robotics professor at our university."),
+    (22.45, 25.69, "It was from those conversations that I came to this idea."),
+    (26.65, 30.41, "Simply put: what if we could create a Tholpavakoothu performance"),
+    (30.41, 32.32, "the way we edit a film?"),
+    (33.15, 38.68, "Which puppet moves when, which light comes on when:"),
+    (38.68, 41.94, "we can set it all on a timeline, just like in Premiere Pro."),
+    (42.87, 46.10, "We can also edit and animate the puppets in 3D."),
+    (46.45, 50.70, "And with the same timeline, we can control real puppets and lights through an Arduino."),
+    (51.16, 56.39, "I have made it as an open-source, browser-based studio."),
+    (56.93, 59.90, "It is not meant to replace an art form."),
+    (59.90, 67.96, "It is about whether technology can help us create, preserve and share it in a new way."),
+    (69.39, 73.27, "If anyone would like to collaborate on this, I'm really happy to collab."),
 ]
 
 SUB = """<html><head><style>
 @font-face { font-family: G; src: url('{base}fonts/geist.woff2'); }
 html, body { margin: 0; background: transparent; width: {w}px; }
-p { margin: 0 auto; width: {tw}px; text-align: center; font: 500 {fs}px/1.3 G; color: #fff;
-  text-shadow: 0 2px 4px rgba(0,0,0,.95), 0 0 10px rgba(0,0,0,.85), 0 0 28px rgba(0,0,0,.75); padding: 24px 0; }
-</style></head><body><p>{text}</p></body></html>"""
+p { margin: 0 auto; width: {tw}px; text-align: center; padding: 2px 0; }
+/* film subtitles: white on a dark box that follows each line */
+span { font: 500 {fs}px/1.55 G; color: #fff; background: rgba(0,0,0,.72); padding: 4px 14px;
+  box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+</style></head><body><p><span>{text}</span></p></body></html>"""
 
 
-def subtitles(spans, shape):
-    """Each part of each line as an image, with when it shows: [(png, start, end)]."""
+def subtitles(shape, place):
+    """Each subtitle as an image, with when it shows in the film: [(png, start, end)]. `place` turns a time in the
+    take into a time in the film, or None for a sentence left out."""
     from playwright.sync_api import sync_playwright
     w, tw, fs = (1080, 940, 44) if shape == "9x16" else (1920, 1500, 40)
     out = []
@@ -130,35 +146,33 @@ def subtitles(spans, shape):
         browser = pw.chromium.launch(channel="msedge", headless=True)
         page = browser.new_page(viewport={"width": w, "height": 400})
         page.goto("http://localhost:8765/film-studio.html")
-        for li, ((a, b), parts) in enumerate(zip(spans, SUBS_ML)):
-            weights = [len(t) for t in parts]
-            t = a
-            for pi, text in enumerate(parts):
-                d = (b - a) * weights[pi] / sum(weights)
-                png = OUT / "subs" / f"{shape}_{li}_{pi}.png"
-                html = SUB.replace("{base}", "http://localhost:8765/").replace("{text}", text)
-                page.set_content(html.replace("{w}", str(w)).replace("{tw}", str(tw)).replace("{fs}", str(fs)))
-                page.evaluate("document.fonts.ready")
-                page.wait_for_timeout(120)
-                page.locator("p").screenshot(path=str(png), omit_background=True)
-                out.append((png, t, t + d + (0.3 if pi == len(parts) - 1 else 0)))
-                t += d
+        for i, (a, b, text) in enumerate(SUBS_ML):
+            fa, fb = place(a), place(b)
+            if fa is None:
+                continue
+            png = OUT / "subs" / f"{shape}_{i:02d}.png"
+            html = SUB.replace("{base}", "http://localhost:8765/").replace("{text}", text)
+            page.set_content(html.replace("{w}", str(w)).replace("{tw}", str(tw)).replace("{fs}", str(fs)))
+            page.evaluate("document.fonts.ready")
+            page.wait_for_timeout(120)
+            page.locator("p").screenshot(path=str(png), omit_background=True)
+            out.append((png, fa, fb + 0.25))
         browser.close()
     return out
 
 
-def burn(src, subs, shape, dst):
-    """Lay the subtitles over a finished film: in 9:16 above the studio, in 16:9 along the bottom."""
-    SHOW_END = REEL_ML_CUTS[0][2] - FADE
+def burn(src, subs, shape, dst, shows=()):
+    """Lay the subtitles over a finished film. In 16:9 along the bottom; in 9:16 above the studio, and low in the frame,
+    clear of the moon, while the show itself is on (`shows`: its spans); a subtitle running across a cut moves with it."""
     from PIL import Image
-    if shape == "9x16":  # a subtitle running across the cut to the studio moves up with it
-        subs = [part for png, a, b in subs
-                for part in ([(png, a, SHOW_END), (png, SHOW_END, b)] if a < SHOW_END < b else [(png, a, b)])]
+    for c in sorted({t for span in shows for t in span}):
+        subs = [part for png, a, b in subs for part in ([(png, a, c), (png, c, b)] if a < c < b else [(png, a, b)])]
     args, chain, last = ["-i", str(src)], "", "0:v"
     for i, (png, a, b) in enumerate(subs):
         h = Image.open(png).height
-        if shape == "9x16":  # over the opening show, low in the frame clear of the moon; then above the studio
-            y = f"{1560 - h // 2}" if a < SHOW_END else f"{200 - h // 2}"
+        if shape == "9x16":
+            low = any(x <= a < y for x, y in shows)
+            y = f"{1560 - h // 2}" if low else f"{200 - h // 2}"
         else:
             y = f"H-{60 + h}"
         args += ["-i", str(png)]
@@ -172,27 +186,66 @@ def burn(src, subs, shape, dst):
     print("wrote", dst)
 
 
-# (seconds into the Reel, start and end in the take)
-REEL_ML = [(0.6, 0.64, 13.88), (14.4, 14.62, 25.70), (26.0, 26.66, 41.96), (42.4, 42.56, 50.70),
-           (51.0, 51.14, 56.40), (57.4, 56.92, 64.78), (66.0, 65.46, 73.81)]
+
+# The take was recorded with Dolby On, which already removes noise, shapes the tone, levels the voice and widens it to
+# stereo, so it is used as it is: only the few peaks it clipped are rebuilt, and a ceiling keeps them from clipping
+# again. (Cleaning it again, by EQ, noise reduction or a speech-enhancement model, only made it sound worse.)
+VOICE_CLEAN = "adeclip,alimiter=limit=0.95"
 
 
-# The phone take clips in places, booms (rumble and too much low end), is dull where speech is clearest (3-6 kHz),
-# and comes in slightly mismatched stereo. In order: to mono, the clipped peaks rebuilt, rumble off, a little hiss off,
-# the boom thinned, presence and a little air back, sibilance softened, levelled, and held under a ceiling.
-VOICE_CLEAN = ("pan=mono|c0=0.5*c0+0.5*c1,adeclip,highpass=f=90,afftdn=nr=12:nf=-50,"
-               "equalizer=f=220:t=q:w=1:g=-4,equalizer=f=3500:t=q:w=1.2:g=5,equalizer=f=9000:t=q:w=1:g=2,"
-               "deesser=i=0.4,acompressor=threshold=-24dB:ratio=3:attack=6:release=160:makeup=2,alimiter=limit=0.89")
-
-
-def own_voice(lines):
-    """Lines cut from the recorded take, cleaned (VOICE_CLEAN), each with a little room either side."""
+def own_voice(lines, tempo=1.0):
+    """Sentences cut from the recorded take, with its clipped peaks rebuilt (VOICE_CLEAN), each with a little room either side, to be laid
+    where they were said."""
     clean = VO / "ml" / "take_clean.wav"
     if not clean.exists() or clean.stat().st_mtime < max(ML_TAKE.stat().st_mtime, Path(__file__).stat().st_mtime):
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(ML_TAKE), "-af", VOICE_CLEAN,
                         "-ar", str(RATE), "-ac", "2", str(clean)], check=True)
+    if tempo != 1.0:
+        quick = VO / "ml" / f"take_clean_{tempo}.wav"
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(clean), "-af", f"atempo={tempo}", str(quick)],
+                       check=True)
+        clean = quick
     take = mix_audio.read_wav(clean)
-    return [(at, take[max(0, int((a - 0.15) * RATE)): int((b + 0.25) * RATE)]) for at, a, b in lines]
+    return [take[max(0, int((a / tempo - 0.15) * RATE)): int((b / tempo + 0.25) * RATE)] for a, b in lines]
+
+
+def ml_film(clicks, spec, shape, name):
+    """A film to Rahulraj's Malayalam narration: each kept sentence placed (as said, or one after another with
+    `gap` between), and the pictures cut to the plan, then subtitles."""
+    tempo, keep = spec["tempo"], spec["keep"]
+    voices = own_voice([SENTENCES[i] for i in keep], tempo)
+    starts, t = {}, 0.6
+    for i in keep:
+        a, b = SENTENCES[i]
+        starts[i] = a - 0.12 if spec["gap"] is None else t
+        t = starts[i] + (b - a) / tempo + (spec["gap"] or 0)
+    ends = {i: starts[i] + (SENTENCES[i][1] - SENTENCES[i][0]) / tempo for i in keep}
+
+    def place(x):
+        for i in keep:
+            a, b = SENTENCES[i]
+            if a - 0.05 <= x <= b + 0.05:
+                return starts[i] + 0.12 + (x - a) / tempo
+        return None
+
+    cuts = []
+    groups = spec["plan"]
+    for gi, (sents, shots) in enumerate(groups):
+        if not shots:
+            continue
+        g0 = 0.0 if gi == 0 else starts[sents[0]]
+        nxt = [starts[g[0][0]] for g in groups[gi + 1:] if g[1]]
+        g1 = nxt[0] if nxt else ends[sents[-1]] + 0.9
+        need = g1 - g0 + (FADE if gi == 0 else 0)
+        for k, (f, a, most) in enumerate(shots):
+            if need <= 0.05:
+                break
+            run = min(most, need)
+            last = k == len(shots) - 1
+            cuts.append((f, a, a + run, max(0.0, need - run) if last else 0))
+            need -= run + (max(0.0, need - run) if last else 0)
+    clips = [(starts[i], v) for i, v in zip(keep, voices)]
+    reel(clicks, cuts=cuts, clips=clips, sfx="_ml", shape=shape, name=name, credits_sfx=spec["credits"], place=place)
 
 
 def speak(lines, tag):
@@ -209,14 +262,14 @@ def speak(lines, tag):
     return clips
 
 
-def lay(clips, secs):
+def lay(clips, secs, gap=0.35):
     n = int(secs * RATE)
     voice = np.zeros((n, 2), np.float32)
     speaking = np.zeros(n, np.float32)
     end = 0.0
     lay.spans = []
     for at, c in clips:
-        at = max(at, end + 0.35)  # never over the last line
+        at = max(at, end + gap)  # never over the last line
         loud = np.nonzero(np.abs(c).max(1) > 0.004)[0]  # the voice's own silence before and after
         c = c[max(0, loud[0] - RATE // 8): loud[-1] + RATE // 4].copy()
         # every line at the same loudness, not the same peak, so none sounds nearer or further than the rest
@@ -235,7 +288,7 @@ def lay(clips, secs):
     return voice, speaking
 
 
-def duck(speaking, low=0.22):
+def duck(speaking, low=0.2):
     """The music's level: down under the voice, eased in 0.35 s before a line and back out over a second after."""
     n = len(speaking)
     hop = RATE // 100
@@ -251,8 +304,8 @@ def duck(speaking, low=0.22):
     return np.interp(np.arange(n), np.arange(len(g)) * hop, g).astype(np.float32)[:, None]
 
 
-def mix(secs, clips, clicks, path):
-    voice, speaking = lay(clips, secs)
+def mix(secs, clips, clicks, path, gap=0.35):
+    voice, speaking = lay(clips, secs, gap)
     music = mix_audio.bed(secs, fade_in=1.2, fade_out=3.0)[: len(voice)] * duck(speaking)
     track = music + voice * 0.9
     track[: len(clicks)] += clicks[: len(track)] * 0.8
@@ -287,7 +340,7 @@ def linkedin(clicks, voice=True):
         total, OUT / f"silhouette-ai-demo{sfx.replace('_', '-')}.mp4")
 
 
-def reel(clicks, voice=True, cuts=None, clips=None, sfx=None, shape="9x16", name="reel"):
+def reel(clicks, voice=True, cuts=None, clips=None, sfx=None, shape="9x16", name="reel", credits_sfx=None, place=None):
     """A film cut from pieces: the first joined to the rest by a fade, then the credits."""
     sfx = sfx if sfx is not None else ("" if voice else "_novoice")
     size = "1080:1920" if shape == "9x16" else "1920:1080"
@@ -300,8 +353,9 @@ def reel(clicks, voice=True, cuts=None, clips=None, sfx=None, shape="9x16", name
                   f"settb=1/{FPS}[v{i}];")
         labels.append(f"[v{i}]")
     n = len(cuts)
-    credits = length(OUT / f"credits_{shape}{sfx}.mp4")
-    inputs += ["-i", str(OUT / f"credits_{shape}{sfx}.mp4")]
+    cr_file = OUT / f"credits_{shape}{sfx if credits_sfx is None else credits_sfx}.mp4"
+    credits = length(cr_file)
+    inputs += ["-i", str(cr_file)]
     chain += f"[{n}:v]setpts=PTS-STARTPTS,fps={FPS},scale={size},setsar=1,format=yuv420p,settb=1/{FPS}[cr];"
     chain += f"{''.join(labels[1:])}concat=n={n - 1}:v=1:a=0,settb=1/{FPS}[studio];"
     show_len = cuts[0][2] - cuts[0][1]
@@ -323,21 +377,26 @@ def reel(clicks, voice=True, cuts=None, clips=None, sfx=None, shape="9x16", name
     print(name, "narration")
     if clips is None:
         clips = speak(REEL, "reel") if voice else []
-    mix(total, clips, track, OUT / f"{name}_mix.wav")
+    mix(total, clips, track, OUT / f"{name}_mix.wav", gap=-1.0 if sfx == "_ml" else 0.35)
     out = OUT / f"silhouette-ai-{name}{sfx.replace('_', '-')}.mp4"
     mux(inputs, chain, OUT / f"{name}_mix.wav", total, out)
     if sfx == "_ml":  # English subtitles of the Malayalam
+        shows, t = [], 0.0
+        for k, (f, a, b, hold) in enumerate(cuts):
+            if f.startswith("part"):
+                shows.append((t, t + b - a - (FADE if k == 0 else 0)))
+            t += b - a + hold - (FADE if k == 0 else 0)
         plain = out.with_name(out.stem + "-plain.mp4")
         out.replace(plain)
-        burn(plain, subtitles(lay.spans, shape), shape, out)
+        burn(plain, subtitles(shape, place), shape, out, shows if shape == "9x16" else ())
         plain.unlink()
 
 
 def main():
     clicks = mix_audio.read_wav(OUT / "demo_clicks.wav")
     if "--malayalam" in sys.argv:
-        reel(clicks, cuts=REEL_ML_CUTS, clips=own_voice(REEL_ML), sfx="_ml")
-        reel(clicks, cuts=DEMO_ML_CUTS, clips=own_voice(DEMO_ML), sfx="_ml", shape="16x9", name="demo")
+        ml_film(clicks, REEL_ML, "9x16", "reel")
+        ml_film(clicks, DEMO_ML, "16x9", "demo")
         return
     voice = "--no-voice" not in sys.argv
     linkedin(clicks, voice)

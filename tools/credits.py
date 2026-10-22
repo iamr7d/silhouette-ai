@@ -7,7 +7,7 @@ sub-pixel steps, a little film grain and a vignette.
 Writes film/credits_16x9.mp4 and film/credits_9x16.mp4 (no sound), and the same without the narration's credit
 (credits_*_novoice.mp4) for the films without a voice, and with Rahulraj's own Malayalam narration
 (credits_*_ml.mp4).
-Usage: python tools/credits.py [variant ...]     (variants: voice, novoice, ml; all by default)
+Usage: python tools/credits.py [variant ...]     (variants: voice, novoice, ml, ml_short; all by default)
 Needs python serve.py running, and Microsoft Edge.
 """
 import io
@@ -84,7 +84,12 @@ html, body { margin: 0; background: transparent; width: {w}px; }
 </body></html>"""
 
 NARRATION = {"voice": "synthesised voice, Microsoft Prabhat", "novoice": None,
-             "ml": "Rahulraj P V, in Malayalam"}
+             "ml": "Rahulraj P V, in Malayalam", "ml_short": "Rahulraj P V, in Malayalam"}
+# The short credits (a Reel of about a minute): the people and the music only, on one screen after the title.
+SHORT = {"Created by", "Tholpavakoothu guidance", "Robotics guidance", "Music", "Raga", "Thalam", "Composer",
+         "Nadaswaram", "Edakka", "Produced by", "Directed by", "Narration"}
+SHORT_LINES = {"UAL Creative Computing Institute, London", "Madhava mamava",
+               "from Nadamohanam, in the Abhinavabharatham series", "Blue Planet Cinema"}
 
 SIZES = {
     "16x9": dict(w=1920, h=1080, tw=96, ts=30, ss=22, tt=56, it=40, gap=48, lm=12, rk=19, rv=34, hm=10, lm2=22, ro=34,
@@ -94,9 +99,13 @@ SIZES = {
 }
 
 
-def rows(narration):
+def rows(narration, short=False):
     out = []
     for k, v in CREDITS:
+        if short and k not in SHORT and v not in SHORT_LINES and not (k == "" and v == ""):
+            continue
+        if k == "" and v == "" and (not out or out[-1] == '<div class="gap"></div>'):
+            continue  # no gap at the top, nor two together
         if k == "Narration":
             if not narration:
                 continue
@@ -109,6 +118,8 @@ def rows(narration):
             out.append(f'<div class="o">{v}</div>')
         else:
             out.append(f'<div class="r"><div class="k">{k}</div><div class="v">{v}</div></div>')
+    while out and out[-1] == '<div class="gap"></div>':
+        out.pop()
     return "".join(out)
 
 
@@ -117,9 +128,9 @@ def ease(u):
     return u * u * (3 - 2 * u)
 
 
-def render(page, name, sz, narration):
-    w, h, secs = sz["w"], sz["h"], sz["secs"]
-    html = PAGE.replace("{base}", BASE).replace("{rows}", rows(narration))
+def render(page, name, sz, narration, short=False):
+    w, h, secs = sz["w"], sz["h"], (8.5 if short else sz["secs"])
+    html = PAGE.replace("{base}", BASE).replace("{rows}", rows(narration, short))
     for key, val in sz.items():
         html = html.replace("{" + key + "}", str(val))
     page.set_viewport_size({"width": w, "height": h})
@@ -138,8 +149,10 @@ def render(page, name, sz, narration):
     grain = [rng.normal(0, 5.5, (h, w, 1)).astype(np.float32) for _ in range(6)]
     base = np.array([10, 9, 8], np.float32)
 
-    # timing: title 0.6 to 5.4 s; the roll starts at 5.0 s and the end block comes to rest at secs - 2.6 s
-    t_roll0, t_rest = 5.0, secs - 2.6
+    # timing: title 0.6 to 5.4 s; the roll starts at 5.0 s and the end block comes to rest at secs - 2.6 s. The short
+    # credits: the title to 2.8 s, then everything on one screen, held.
+    t_roll0, t_rest = (2.5, 3.3) if short else (5.0, secs - 2.6)
+    t_out = 2.0 if short else 4.4
     stack = Image.new("RGBA", (w, roll.height + h + end.height), (0, 0, 0, 0))
     stack.alpha_composite(roll, (0, h))
     end_top = h + roll.height + int(h * 0.12)
@@ -148,6 +161,8 @@ def render(page, name, sz, narration):
     full.alpha_composite(stack)
     full.alpha_composite(end, (0, end_top))
     rest = end_top + end.height / 2 - h / 2  # scroll at which the end block is centred
+    if short:  # the credits and the end block together, centred
+        rest = (h + end_top + end.height) / 2 - h / 2
     ff = subprocess.Popen(
         ["ffmpeg", "-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", str(FPS), "-i", "-",
          "-c:v", "libx264", "-preset", "slow", "-crf", "16", "-pix_fmt", "yuv420p", str(OUT / name)],
@@ -155,8 +170,8 @@ def render(page, name, sz, narration):
     n = round(secs * FPS)
     for i in range(n):
         t = i / FPS
-        a_title = ease((t - 0.6) / 1.6) * (1 - ease((t - 4.4) / 1.0))
-        a_glow = 0.10 * ease((t - 0.3) / 2.0) * (1 - ease((t - 4.6) / 1.4)) + 0.05 * ease((t - t_rest + 1.0) / 1.5)
+        a_title = ease((t - 0.4) / (0.9 if short else 1.6)) * (1 - ease((t - t_out) / (0.7 if short else 1.0)))
+        a_glow = 0.10 * ease((t - 0.3) / 2.0) * (1 - ease((t - t_out - 0.2) / 1.4)) + 0.05 * ease((t - t_rest + 1.0) / 1.5)
         fade = 1 - ease((t - (secs - 0.9)) / 0.9)
         bg = base[None, None, :] + glow[..., None] * np.array([255, 170, 80], np.float32) * a_glow
         frame = Image.fromarray(np.clip(bg, 0, 255).astype(np.uint8)).convert("RGBA")
@@ -170,7 +185,7 @@ def render(page, name, sz, narration):
             # constant speed, easing out as the end block arrives
             u = (t - t_roll0) / (t_rest - t_roll0)
             f = u if u < 0.8 else 0.8 + 0.1 * (1 - (1 - (u - 0.8) / 0.2) ** 2) if u < 1 else 0.9
-            off = rest * f / 0.9
+            off = rest if short else rest * f / 0.9
             view = full.resize((w, h), Image.LANCZOS, box=(0, off, w, off + h))
             # soften the roll at the top and bottom edges
             m = np.ones(h, np.float32)
@@ -201,8 +216,10 @@ def main():
         page.goto(BASE + "film-studio.html")
         for key, sz in SIZES.items():
             for variant in sys.argv[1:] or NARRATION:
+                if variant.endswith("_short") and key != "9x16":
+                    continue  # the short credits are for the Reel
                 sfx = "" if variant == "voice" else f"_{variant}"
-                render(page, f"credits_{key}{sfx}.mp4", sz, NARRATION[variant])
+                render(page, f"credits_{key}{sfx}.mp4", sz, NARRATION[variant], variant.endswith("_short"))
         browser.close()
 
 
