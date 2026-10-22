@@ -78,7 +78,7 @@ SENTENCES = [(0.63, 3.50), (3.79, 10.51), (11.22, 13.57), (14.63, 21.83), (22.45
              (33.15, 41.94), (42.87, 46.10), (46.45, 50.70), (51.16, 56.39), (56.93, 67.96), (69.39, 73.27)]
 # What is on screen while each sentence (or group of sentences) is said: (file, start, longest it may run). Each
 # group's shots fill the time until the next group begins; nothing is shown twice. Sentences are numbered from 0.
-V, D = "demo_vertical_nocap.mp4", "demo_video_nocap.mp4"
+V, D = "demo_vertical_ig_nocap.mp4", "demo_video_nocap.mp4"  # the Reel's studio in Instagram's safe layout
 # The Reel, about a minute: the three sentences that repeat others are left out, the pauses are shortened and the
 # reading runs a little quicker (its pitch kept); the credits are the short ones.
 REEL_ML = dict(keep=[0, 1, 3, 5, 6, 7, 8, 10, 11], tempo=1.06, gap=0.45, credits="_ml_short", plan=[
@@ -161,6 +161,14 @@ def subtitles(shape, place):
     return out
 
 
+# What Instagram takes best for a Reel: H.264 High, 1080 x 1920 at 30 fps, a key frame every 2 s, about 8 Mbit/s
+# (higher only makes it squeeze harder), BT.709 colour, and sound at 48 kHz (already levelled to -14 LUFS).
+INSTA_VIDEO = ["-c:v", "libx264", "-preset", "slow", "-profile:v", "high", "-level", "4.1", "-crf", "19",
+               "-maxrate", "8M", "-bufsize", "16M", "-g", "60", "-keyint_min", "60", "-sc_threshold", "0",
+               "-pix_fmt", "yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709",
+               "-r", "30"]
+
+
 def burn(src, subs, shape, dst, shows=()):
     """Lay the subtitles over a finished film. In 16:9 along the bottom; in 9:16 above the studio, and low in the frame,
     clear of the moon, while the show itself is on (`shows`: its spans); a subtitle running across a cut moves with it."""
@@ -172,7 +180,7 @@ def burn(src, subs, shape, dst, shows=()):
         h = Image.open(png).height
         if shape == "9x16":
             low = any(x <= a < y for x, y in shows)
-            y = f"{1560 - h // 2}" if low else f"{200 - h // 2}"
+            y = f"{1330 - h // 2}" if low else f"{310 - h // 2}"  # inside Instagram's safe area
         else:
             y = f"H-{60 + h}"
         args += ["-i", str(png)]
@@ -181,8 +189,12 @@ def burn(src, subs, shape, dst, shows=()):
         last = nxt
     chain = chain[:-1]
     subprocess.run(["ffmpeg", "-y", "-loglevel", "warning", *args, "-filter_complex", chain, "-map", "[v]", "-map", "0:a",
-                    "-c:v", "libx264", "-preset", "slow", "-crf", "18", "-pix_fmt", "yuv420p", "-c:a", "copy",
-                    "-movflags", "+faststart", str(dst)], check=True)
+                    *(INSTA_VIDEO if shape == "9x16" else ["-c:v", "libx264", "-preset", "slow", "-crf", "18",
+                                                           "-pix_fmt", "yuv420p"]),
+                    "-c:a", "copy", "-movflags", "+faststart", str(dst)], check=True)
+    if shape == "9x16":  # a cover to choose on upload: the opening, the moon and the title
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", "1.2", "-i", str(dst), "-frames:v", "1", "-q:v", "2",
+                        str(dst.with_name(dst.stem + "-cover.jpg"))], check=True)
     print("wrote", dst)
 
 

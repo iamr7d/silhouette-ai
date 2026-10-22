@@ -11,7 +11,9 @@ is; that place up close below it; the caption above both.
 
 Writes film/demo_video.mp4 and film/demo_vertical.mp4 (no sound), and a frame a second of each to look over; with
 --no-captions, the same without the captions (*_nocap.mp4), for films subtitled from their narration instead.
-Usage: python tools/camera.py [--no-captions]
+With --insta, only the 9:16 cut, laid out inside Instagram's safe area (clear of the Reels header at the top and of
+the caption and buttons at the bottom): film/demo_vertical_ig*.mp4.
+Usage: python tools/camera.py [--no-captions] [--insta]
 """
 import io
 import json
@@ -30,6 +32,10 @@ W, H = 1920, 1080
 NEAR = 1.8  # how much closer the Reel's close-up is than the 16:9 view
 NW, NH = 1080, 760  # the Reel's close-up
 STUDIO_Y, NEAR_Y, CAP_Y = 330, 962, 200
+INSTA = "--insta" in sys.argv
+if INSTA:  # everything between about 260 px from the top and 400 px from the bottom
+    NH = 520
+    STUDIO_Y, NEAR_Y, CAP_Y = 380, 1000, 310
 
 
 def arrow():
@@ -109,7 +115,7 @@ def main():
     scursor = cursor.resize((17, 25), Image.LANCZOS)
     caps, vcaps = {}, {}
     captions = "--no-captions" not in sys.argv
-    sfx = "" if captions else "_nocap"
+    sfx = ("_ig" if INSTA else "") + ("" if captions else "_nocap")
     for f in RAW.glob("cap_*.png") if captions else []:
         caps[int(f.stem[4:])] = Image.open(f).convert("RGBA")
     for f in RAW.glob("vcap_*.png") if captions else []:
@@ -120,22 +126,24 @@ def main():
     for d in ("demo_frames", "demo_frames_v") if captions else ():
         shutil.rmtree(OUT / d, ignore_errors=True)
         (OUT / d).mkdir()
-    ff, ffv = encoder(f"demo_video{sfx}.mp4", fps), encoder(f"demo_vertical{sfx}.mp4", fps)
+    ff = None if INSTA else encoder(f"demo_video{sfx}.mp4", fps)
+    ffv = encoder(f"demo_vertical{sfx}.mp4", fps)
     k = 1080 / W
     for i, s in enumerate(states):
         raw = Image.open(RAW / f"{i:05d}.jpg").convert("RGB")
 
-        # 16:9
-        z = zoom[i]
-        left, top = view(cx[i], cy[i], W / z, H / z)
-        img = (raw.resize((W, H), Image.LANCZOS, box=(left, top, left + W / z, top + H / z)) if z > 1.002 else raw).convert("RGBA")
-        px, py = (s["x"] - left) * z, (s["y"] - top) * z
-        ring(img, px, py, s["ripple"])
-        img.alpha_composite(cursor, (int(px) - 1, int(py) - 1))
-        if s["cap"] in caps:
-            c = caps[s["cap"]]
-            img.alpha_composite(c, ((W - c.width) // 2, H - 70 - c.height))
-        ff.stdin.write(jpeg(img))
+        # 16:9 (not needed for the Instagram layout)
+        if not INSTA:
+            z = zoom[i]
+            left, top = view(cx[i], cy[i], W / z, H / z)
+            img = (raw.resize((W, H), Image.LANCZOS, box=(left, top, left + W / z, top + H / z)) if z > 1.002 else raw).convert("RGBA")
+            px, py = (s["x"] - left) * z, (s["y"] - top) * z
+            ring(img, px, py, s["ripple"])
+            img.alpha_composite(cursor, (int(px) - 1, int(py) - 1))
+            if s["cap"] in caps:
+                c = caps[s["cap"]]
+                img.alpha_composite(c, ((W - c.width) // 2, H - 70 - c.height))
+            ff.stdin.write(jpeg(img))
 
         # 9:16
         v = Image.new("RGBA", (1080, 1920), (14, 12, 10, 255))
@@ -158,10 +166,10 @@ def main():
             v.alpha_composite(c, ((1080 - c.width) // 2, CAP_Y - c.height // 2))
         ffv.stdin.write(jpeg(v, 92))
 
-        if i % fps == 0 and captions:
+        if i % fps == 0 and captions and not INSTA:
             img.convert("RGB").resize((960, 540)).save(OUT / "demo_frames" / f"{i // fps:03d}.jpg", quality=86)
             v.convert("RGB").resize((360, 640)).save(OUT / "demo_frames_v" / f"{i // fps:03d}.jpg", quality=86)
-    for f in (ff, ffv):
+    for f in (ff, ffv) if ff else (ffv,):
         f.stdin.close()
         f.wait()
     print("wrote demo_video.mp4 and demo_vertical.mp4,", len(states), "frames")

@@ -128,7 +128,15 @@ def ease(u):
     return u * u * (3 - 2 * u)
 
 
+# The short credits are for Instagram: set smaller and raised, to sit inside its safe area (about 260 px from the top
+# to 400 px from the bottom, clear of the Reels header and of the caption and buttons).
+SHORT_SIZE = dict(rv=28, rk=15, lm=8, lm2=16, hm=6, gh=34, ro=28, ew=46, eu=30, es=28, en=28)
+SHORT_RAISE = 80
+
+
 def render(page, name, sz, narration, short=False):
+    if short:
+        sz = {**sz, **SHORT_SIZE}
     w, h, secs = sz["w"], sz["h"], (8.5 if short else sz["secs"])
     html = PAGE.replace("{base}", BASE).replace("{rows}", rows(narration, short))
     for key, val in sz.items():
@@ -155,14 +163,14 @@ def render(page, name, sz, narration, short=False):
     t_out = 2.0 if short else 4.4
     stack = Image.new("RGBA", (w, roll.height + h + end.height), (0, 0, 0, 0))
     stack.alpha_composite(roll, (0, h))
-    end_top = h + roll.height + int(h * 0.12)
+    end_top = h + roll.height + int(h * (0.04 if short else 0.12))
     stack = stack.crop((0, 0, w, end_top + end.height))
     full = Image.new("RGBA", (w, end_top + end.height + h), (0, 0, 0, 0))
     full.alpha_composite(stack)
     full.alpha_composite(end, (0, end_top))
     rest = end_top + end.height / 2 - h / 2  # scroll at which the end block is centred
     if short:  # the credits and the end block together, centred
-        rest = (h + end_top + end.height) / 2 - h / 2
+        rest = (h + end_top + end.height) / 2 - h / 2 + SHORT_RAISE
     ff = subprocess.Popen(
         ["ffmpeg", "-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", str(FPS), "-i", "-",
          "-c:v", "libx264", "-preset", "slow", "-crf", "16", "-pix_fmt", "yuv420p", str(OUT / name)],
