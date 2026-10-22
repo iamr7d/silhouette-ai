@@ -19,6 +19,8 @@ from playwright.sync_api import sync_playwright
 
 import mix_audio  # tools/mix_audio.py: the background music
 
+import gpu  # tools/gpu.py: NVENC and GPU drawing when there is a GPU
+
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "film"
 RAW = OUT / "raw"  # every frame as captured, and session.json
@@ -172,7 +174,7 @@ class Recorder:
 def run():
     OUT.mkdir(exist_ok=True)
     with sync_playwright() as p:
-        browser = p.chromium.launch(channel="msedge", headless=True)
+        browser = p.chromium.launch(channel="msedge", headless=True, args=gpu.BROWSER_ARGS)
         r = Recorder(browser)
         pg = r.page
         step = lambda: pg.keyboard.press("ArrowRight")  # the show moves on a frame at a time

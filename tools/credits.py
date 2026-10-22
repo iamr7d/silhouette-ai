@@ -19,6 +19,8 @@ import numpy as np
 from PIL import Image
 from playwright.sync_api import sync_playwright
 
+import gpu  # tools/gpu.py: NVENC and GPU drawing when there is a GPU
+
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "film"
 BASE = "http://localhost:8765/"
@@ -48,7 +50,12 @@ CREDITS = [
     ("Directed by", "Sharath A Haridasan"),
     ("", ""),
     ("Narration", "{narration}"),
-    ("Type", "Marcellus, Geist, Manjari, Rachana"),
+    ("Fonts", "Marcellus, by Astigmatic"),
+    ("", "Cinzel, by Natanael Gama"),
+    ("", "Cormorant Garamond, by Christian Thalmann"),
+    ("", "Geist, by Vercel"),
+    ("", "Manjari, by Santhosh Thottingal (SMC)"),
+    ("", "Rachana, by Hussain K H and Rachana Akshara Vedi (SMC)"),
     ("", ""),
     ("With respect", None),
     (None, "to the pulavars, puppeteers and lamp keepers of Kerala,"),
@@ -86,8 +93,10 @@ html, body { margin: 0; background: transparent; width: {w}px; }
 NARRATION = {"voice": "synthesised voice, Microsoft Prabhat", "novoice": None,
              "ml": "Rahulraj P V, in Malayalam", "ml_short": "Rahulraj P V, in Malayalam"}
 # The short credits (a Reel of about a minute): the people and the music only, on one screen after the title.
-SHORT = {"Created by", "Tholpavakoothu guidance", "Robotics guidance", "Music", "Raga", "Thalam", "Composer",
+SHORT = {"Created by", "Tholpavakoothu guidance", "Robotics guidance", "Music", "Raga", "Thalam", "Composer", "Fonts",
          "Nadaswaram", "Edakka", "Produced by", "Directed by", "Narration"}
+# in the short credits the fonts take two lines, without their designers (they are in the full credits)
+SHORT_FONTS = ["Marcellus, Cinzel, Cormorant Garamond, Geist", "Manjari and Rachana, by SMC"]
 SHORT_LINES = {"UAL Creative Computing Institute, London", "Madhava mamava",
                "from Nadamohanam, in the Abhinavabharatham series", "Blue Planet Cinema"}
 
@@ -106,6 +115,10 @@ def rows(narration, short=False):
             continue
         if k == "" and v == "" and (not out or out[-1] == '<div class="gap"></div>'):
             continue  # no gap at the top, nor two together
+        if short and k == "Fonts":
+            out.append(f'<div class="r"><div class="k">Fonts</div><div class="v">{SHORT_FONTS[0]}</div></div>')
+            out.append(f'<div class="r"><div class="k"></div><div class="v">{SHORT_FONTS[1]}</div></div>')
+            continue
         if k == "Narration":
             if not narration:
                 continue
@@ -173,7 +186,7 @@ def render(page, name, sz, narration, short=False):
         rest = (h + end_top + end.height) / 2 - h / 2 + SHORT_RAISE
     ff = subprocess.Popen(
         ["ffmpeg", "-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", str(FPS), "-i", "-",
-         "-c:v", "libx264", "-preset", "slow", "-crf", "16", "-pix_fmt", "yuv420p", str(OUT / name)],
+         *gpu.video(16), str(OUT / name)],
         stdin=subprocess.PIPE)
     n = round(secs * FPS)
     for i in range(n):
@@ -219,7 +232,7 @@ def render(page, name, sz, narration, short=False):
 
 def main():
     with sync_playwright() as p:
-        browser = p.chromium.launch(channel="msedge", headless=True)
+        browser = p.chromium.launch(channel="msedge", headless=True, args=gpu.BROWSER_ARGS)
         page = browser.new_page()
         page.goto(BASE + "film-studio.html")
         for key, sz in SIZES.items():

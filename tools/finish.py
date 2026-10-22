@@ -21,6 +21,8 @@ import numpy as np
 
 import mix_audio  # tools/mix_audio.py: the music, and reading and writing sound
 
+import gpu  # tools/gpu.py: NVENC and GPU drawing when there is a GPU
+
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "film"
 VO = OUT / "vo"
@@ -82,7 +84,8 @@ V, D = "demo_vertical_ig_nocap.mp4", "demo_video_nocap.mp4"  # the Reel's studio
 # The Reel, about a minute: the three sentences that repeat others are left out, the pauses are shortened and the
 # reading runs a little quicker (its pitch kept); the credits are the short ones.
 REEL_ML = dict(keep=[0, 1, 3, 5, 6, 7, 8, 10, 11], tempo=1.06, gap=0.45, credits="_ml_short", plan=[
-    ([0, 1, 3], [("part1.mp4", 0.0, 22.0)]),              # the art, UAL, Vipin chettan and Hooman Samani: the show
+    ([0, 1, 3], [("part1_notext.mp4", 6.5, 25.4)]),       # the art, UAL, Vipin chettan and Hooman Samani: the show,
+                                                          # from the lit cloth (no night sky), without its own words
     ([5], [(V, 14.0, 3.8), (V, 18.4, 6.2)]),               # like editing a film: the studio, a figure from the library
     ([6], [(V, 24.6, 5.0), (V, 45.5, 4.5)]),               # which puppet moves when, which light: keyframes, the lamps
     ([7], [(V, 62.4, 6.0)]),                               # puppets in 3D
@@ -128,7 +131,7 @@ SUBS_ML = [
 SUB = """<html><head><style>
 @font-face { font-family: G; src: url('{base}fonts/geist.woff2'); }
 html, body { margin: 0; background: transparent; width: {w}px; }
-p { margin: 0 auto; width: {tw}px; text-align: center; padding: 2px 0; }
+p { margin: 0 auto; width: {tw}px; text-align: center; padding: 2px 0; text-wrap: balance; }  /* even lines, no lone word */
 /* film subtitles: white on a dark box that follows each line */
 span { font: 500 {fs}px/1.55 G; color: #fff; background: rgba(0,0,0,.72); padding: 4px 14px;
   box-decoration-break: clone; -webkit-box-decoration-break: clone; }
@@ -139,11 +142,11 @@ def subtitles(shape, place):
     """Each subtitle as an image, with when it shows in the film: [(png, start, end)]. `place` turns a time in the
     take into a time in the film, or None for a sentence left out."""
     from playwright.sync_api import sync_playwright
-    w, tw, fs = (1080, 940, 44) if shape == "9x16" else (1920, 1500, 40)
+    w, tw, fs = (1080, 900, 36) if shape == "9x16" else (1920, 1400, 32)
     out = []
     (OUT / "subs").mkdir(exist_ok=True)
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(channel="msedge", headless=True)
+        browser = pw.chromium.launch(channel="msedge", headless=True, args=gpu.BROWSER_ARGS)
         page = browser.new_page(viewport={"width": w, "height": 400})
         page.goto("http://localhost:8765/film-studio.html")
         for i, (a, b, text) in enumerate(SUBS_ML):
@@ -158,15 +161,11 @@ def subtitles(shape, place):
             page.locator("p").screenshot(path=str(png), omit_background=True)
             out.append((png, fa, fb + 0.25))
         browser.close()
-    return out
+    # a subtitle lingers a moment after its words, but never into the next one: one at a time
+    return [(png, a, min(b, out[k + 1][1] - 0.04) if k + 1 < len(out) else b) for k, (png, a, b) in enumerate(out)]
 
 
-# What Instagram takes best for a Reel: H.264 High, 1080 x 1920 at 30 fps, a key frame every 2 s, about 8 Mbit/s
-# (higher only makes it squeeze harder), BT.709 colour, and sound at 48 kHz (already levelled to -14 LUFS).
-INSTA_VIDEO = ["-c:v", "libx264", "-preset", "slow", "-profile:v", "high", "-level", "4.1", "-crf", "19",
-               "-maxrate", "8M", "-bufsize", "16M", "-g", "60", "-keyint_min", "60", "-sc_threshold", "0",
-               "-pix_fmt", "yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709",
-               "-r", "30"]
+INSTA_VIDEO = gpu.instagram()  # see tools/gpu.py
 
 
 def burn(src, subs, shape, dst, shows=()):
@@ -180,7 +179,7 @@ def burn(src, subs, shape, dst, shows=()):
         h = Image.open(png).height
         if shape == "9x16":
             low = any(x <= a < y for x, y in shows)
-            y = f"{1330 - h // 2}" if low else f"{310 - h // 2}"  # inside Instagram's safe area
+            y = f"{1465 - h // 2}" if low else f"{310 - h // 2}"  # inside Instagram's safe area, below the beam
         else:
             y = f"H-{60 + h}"
         args += ["-i", str(png)]
@@ -189,11 +188,10 @@ def burn(src, subs, shape, dst, shows=()):
         last = nxt
     chain = chain[:-1]
     subprocess.run(["ffmpeg", "-y", "-loglevel", "warning", *args, "-filter_complex", chain, "-map", "[v]", "-map", "0:a",
-                    *(INSTA_VIDEO if shape == "9x16" else ["-c:v", "libx264", "-preset", "slow", "-crf", "18",
-                                                           "-pix_fmt", "yuv420p"]),
+                    *(INSTA_VIDEO if shape == "9x16" else gpu.video(18)),
                     "-c:a", "copy", "-movflags", "+faststart", str(dst)], check=True)
-    if shape == "9x16":  # a cover to choose on upload: the opening, the moon and the title
-        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", "1.2", "-i", str(dst), "-frames:v", "1", "-q:v", "2",
+    if shape == "9x16":  # a cover to choose on upload: Ganapati on the lit cloth
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", "3.0", "-i", str(dst), "-frames:v", "1", "-q:v", "2",
                         str(dst.with_name(dst.stem + "-cover.jpg"))], check=True)
     print("wrote", dst)
 
@@ -327,7 +325,7 @@ def mix(secs, clips, clicks, path, gap=0.35):
 def mux(video_args, chain, audio, secs, out):
     subprocess.run(
         ["ffmpeg", "-y", "-loglevel", "warning", *video_args, "-i", str(audio), "-filter_complex", chain,
-         "-map", "[v]", "-map", "[a]", "-c:v", "libx264", "-preset", "slow", "-crf", "18", "-pix_fmt", "yuv420p",
+         "-map", "[v]", "-map", "[a]", *gpu.video(18),
          "-r", str(FPS), "-c:a", "aac", "-b:a", "192k", "-ar", str(RATE), "-movflags", "+faststart",
          "-t", f"{secs:.3f}", str(out)], check=True)
     print("wrote", out, f"({secs:.1f} s)")

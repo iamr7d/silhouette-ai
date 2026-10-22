@@ -25,6 +25,8 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw
 
+import gpu  # tools/gpu.py: NVENC and GPU drawing when there is a GPU
+
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "film"
 RAW = OUT / "raw"
@@ -97,7 +99,7 @@ def ring(img, px, py, ripple, scale=1.0):
 def encoder(name, fps):
     return subprocess.Popen(
         ["ffmpeg", "-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", str(fps), "-i", "-",
-         "-c:v", "libx264", "-preset", "slow", "-crf", "18", "-pix_fmt", "yuv420p", str(OUT / name)],
+         *gpu.video(18), str(OUT / name)],
         stdin=subprocess.PIPE)
 
 

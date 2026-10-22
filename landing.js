@@ -19,6 +19,9 @@ if (VIDEO) document.documentElement.classList.add("video");
 // Clean footage (index.html?video&clean): only the cloth, its lamps and figures, for cutting into other films.
 const CLEAN = VIDEO && new URLSearchParams(location.search).has("clean");
 if (CLEAN) document.documentElement.classList.add("clean");
+// Footage without words (index.html?video&notext): the film as it is, but without its own titles and chapter texts,
+// for films that carry subtitles of their own.
+if (VIDEO && new URLSearchParams(location.search).has("notext")) document.documentElement.classList.add("notext");
 let showOverride = null; // in clean footage the renderer names the moment of the show directly
 // Seconds of film → seconds of the show, paced for a Reel: each chapter holds just long enough to read its line.
 // The film leaves the last chapter (the studio) to its own second part.
@@ -36,11 +39,14 @@ let clockMs = 0; // the film's clock, in video mode
 
 function show() {
   // Twenty-one lamps, lit one after another from the left, as a single flame is carried along the beam,
-  // burning low over the history and almost out by the closing card.
-  const lights = lampRow("koothu", 21, 700);
+  // burning low over the history and almost out by the closing card. The 9:16 film frames a stretch of the beam at
+  // the figures' true scale (a shell about 15 cm across beside a figure about a metre tall), so fewer lamps show.
+  const count = VIDEO ? 7 : 21;
+  const lights = lampRow("koothu", count, 700);
   lights.forEach((lamp, i) => {
-    const on = 0.5 + i * 0.13;
-    lamp.props.intensity.keys = [K(0, [0]), K(on, [0]), K(on + 0.5, [110]), K(40, [110]), K(44, [38]), K(46.4, [30]), K(48, [6])];
+    const on = 0.5 + (i * 2.6) / (count - 1);
+    const f = count === 21 ? 1 : 1.75; // fewer lamps burn brighter, so the cloth is lit as fully
+    lamp.props.intensity.keys = [K(0, [0]), K(on, [0]), K(on + 0.5, [110 * f]), K(40, [110 * f]), K(44, [38 * f]), K(46.4, [30 * f]), K(48, [6 * f])];
   });
 
   const ganesh = makePuppet("img:ganesh", "Ganapati", 3, { position: [960, Y] }, { start: 4, end: 8.2 });

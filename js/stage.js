@@ -404,9 +404,11 @@ const rand = (seed, k) => {
 function shellOf(l) {
   const k = 0.88 + 0.22 * rand(l.seed, 1);
   // A half coconut shell is about 15 cm across against a figure about a metre tall, so its size follows the
-  // figures; it is never so wide that neighbours on the beam touch.
+  // figures; it is never so wide that neighbours on the beam touch (about 60% of the space between two lamps).
   const fig = (H * (S.project.screen.figure || 55)) / 100;
-  const h = Math.min(fig * 0.077, W * 0.0155) * k;
+  const n = Math.max(2, S.project.lights.length);
+  const gap = (W * 0.84) / (n - 1);
+  const h = Math.min(fig * 0.077, Math.max(W * 0.0155, gap * 0.31)) * k;
   return { h, w: h * (1.85 + 0.2 * rand(l.seed, 2)), tilt: (rand(l.seed, 3) - 0.5) * 0.08 };
 }
 

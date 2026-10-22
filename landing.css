@@ -408,3 +408,4 @@ html.video .tc-title { font-size: 76px; letter-spacing: 0.16em; margin-right: -0
 /* Clean footage: no words, no night, no falling leaves; just the cloth, the lamps and the figures. */
 html.clean .chapters, html.clean .night, html.clean .falling, html.clean .caption, html.clean .titles { display: none; }
 html.clean .screen.turn { animation: none; } /* cuts in the edit do this job */
+html.notext .chapters, html.notext .caption, html.notext .titles { display: none; }

@@ -11,6 +11,8 @@ from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
+import gpu  # tools/gpu.py: NVENC and GPU drawing when there is a GPU
+
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "film"
 FPS = 30
@@ -18,7 +20,7 @@ W, H = 1080, 1920
 
 
 def open_page(p, url):
-    browser = p.chromium.launch(channel="msedge", headless=True)
+    browser = p.chromium.launch(channel="msedge", headless=True, args=gpu.BROWSER_ARGS)
     page = browser.new_page(viewport={"width": W, "height": H}, device_scale_factor=1)
     page.goto(url, wait_until="networkidle")
     page.wait_for_function("typeof window.__seek === 'function' && window.__ready", timeout=60000)
@@ -32,7 +34,7 @@ def frames(url, length, out_file):
     n = round(length * FPS)
     ff = subprocess.Popen(
         ["ffmpeg", "-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", str(FPS), "-i", "-",
-         "-c:v", "libx264", "-preset", "slow", "-crf", "17", "-pix_fmt", "yuv420p", str(out_file)],
+         *gpu.video(17), str(out_file)],
         stdin=subprocess.PIPE,
     )
     with sync_playwright() as p:
@@ -81,7 +83,7 @@ def assemble(parts, out_file, cross=(0.5, 1.0)):
     chain += f"[{len(parts)}:a]atrim=0:{total},afade=t=in:st=0:d=1.5,afade=t=out:st={total - 3}:d=3,volume=0.9[a]"
     subprocess.run(
         ["ffmpeg", "-y", "-loglevel", "error", *inputs, "-i", str(music), "-filter_complex", chain,
-         "-map", label, "-map", "[a]", "-c:v", "libx264", "-preset", "slow", "-crf", "18", "-pix_fmt", "yuv420p",
+         "-map", label, "-map", "[a]", *gpu.video(18),
          "-r", str(FPS), "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", "-t", f"{total:.3f}", str(OUT / out_file)],
         check=True,
     )
