@@ -4,8 +4,8 @@ LinkedIn (16:9): the whole framed session (film/demo_video.mp4), then the credit
 Reel (9:16): the night on the cloth (film/part1.mp4), the strongest moments of the studio (film/demo_vertical.mp4),
 then the credits (film/credits_9x16.mp4).
 
-The narration is a documentary voice telling the story behind the project, spoken by an offline voice (Kokoro, in
-film/vo/, kept out of the repository) and placed line by line on the pictures. The music (tools/mix_audio.py) dips
+The narration is a documentary voice telling the story behind the project, spoken by a Microsoft neural voice
+(Prabhat, Indian English, through edge-tts; the lines are kept in film/vo/) and placed line by line on the pictures. The music (tools/mix_audio.py) dips
 under each line and comes back between them; the clicks sit on top, quietly. Each film is levelled to -14 LUFS.
 
 Writes film/silhouette-ai-demo.mp4 and film/silhouette-ai-reel.mp4.
@@ -23,24 +23,23 @@ OUT = ROOT / "film"
 VO = OUT / "vo"
 FPS = 30
 RATE = mix_audio.RATE
-VOICE, SPEED = "bm_george", 0.92
-THOL = "Tholpaava koothu"  # spelt for the voice to say it close to തോൽപ്പാവക്കൂത്ത്
+VOICE, PACE = "en-IN-PrabhatNeural", "+0%"
+THOL = "Tholpavakoothu"
 
 # (seconds into the film, words)
 LINKEDIN = [
     (0.8, f"A few years ago, I set out to make a film about {THOL}, the leather shadow puppetry of Kerala. "
-          "The film never happened. But the art stayed with me."),
-    (12.6, "I spent hours talking with Vipin Viswanathan Pulavar. The puppeteers themselves were asking how to keep "
-           "this art, share it, and carry it further."),
-    (23.0, "So I built Silhouette A I. A studio in the browser that stages a show the way it is performed: "
-           "one long cloth, the lamps, and figures held on sticks."),
-    (35.4, "Figures, lamps, story and sound all sit on one timeline, like a film edit."),
-    (41.0, "You can watch from the audience, or from behind the cloth, where the puppeteers stand."),
-    (47.0, "Twenty-one lamps on the beam, each its own light."),
-    (51.0, "I took the idea to Hooman Samani at the Creative Computing Institute, and his guidance pushed me to build it."),
-    (60.4, "Each figure turns in 3D, and can be cut into parts that move on their joints."),
-    (70.4, "And with every puppet wired to motors, the same timeline can play real figures."),
-    (77.0, "Silhouette A I. Open source, for anyone who wants to carry it on."),
+          "It never happened. But the art stayed with me."),
+    (14.0, "I spent hours talking with Vipin Viswanathan Pulavar. The puppeteers themselves were asking how to keep "
+           "this art alive, and carry it further."),
+    (24.6, "So I built Silhouette A I: a studio in the browser, where figures, lamps, story and sound sit on one "
+           "timeline, like a film edit."),
+    (35.2, "Pull a figure off the cloth, or watch from behind it, where the puppeteers stand."),
+    (44.8, "Twenty-one lamps on the beam, each its own light."),
+    (49.5, "I took the idea to Hooman Samani at the Creative Computing Institute, and his guidance pushed me to build it."),
+    (59.9, "Each figure turns in 3D, and can be cut into parts that move on their joints."),
+    (70.3, "And with every puppet wired to motors, the same timeline can play real figures."),
+    (78.0, "Silhouette A I. Open source, for anyone who wants to carry it on."),
 ]
 
 # (file, start, end) in seconds; studio times are in the recorded session
@@ -57,32 +56,26 @@ FADE = 0.5  # between the show and the studio, and into the credits; the studio 
 
 REEL = [
     (0.6, f"A few years ago, I set out to make a film about {THOL}, the leather shadow puppetry of Kerala. "
-          "The film never happened. But the art stayed with me."),
-    (11.8, "I spent hours talking with Vipin Viswanathan Pulavar, about how to keep this art, share it, "
-           "and carry it further."),
-    (19.6, "So I built Silhouette A I: a studio in the browser, where figures, lamps, story and sound "
-           "sit on one timeline."),
-    (29.2, "Pull a figure off the cloth, or watch from behind it, where the puppeteers stand."),
-    (37.8, "Turn each figure in 3D, and cut it into parts that move on their joints."),
-    (45.8, "And the same timeline can play real puppets, on motors."),
-    (51.0, "Silhouette A I. Open source, for anyone who wants to carry it on."),
+          "It never happened. But the art stayed with me."),
+    (13.2, "Talking with Vipin Viswanathan Pulavar, one question stayed: how do we carry this art further?"),
+    (20.2, "So I built Silhouette A I. A studio in the browser, where every figure, lamp and story sits on one timeline."),
+    (29.5, "Pull a figure off the cloth. Or watch from behind it."),
+    (38.1, "Turn each figure in 3D, and cut it into parts that move."),
+    (46.1, "And the same timeline can play real puppets, on motors."),
+    (51.5, "Silhouette A I. Open source, for anyone who wants to carry it on."),
 ]
 
 
 def speak(lines, tag):
     """Each line spoken once (kept in film/vo/), laid at its time; returns the voice track and where it speaks."""
-    from kokoro_onnx import Kokoro
-    import soundfile as sf
-    tts = None
     clips = []
     for i, (at, text) in enumerate(lines):
-        path = VO / f"{tag}_{i:02d}.wav"
+        path = VO / f"{tag}_{i:02d}.mp3"
         key = VO / f"{tag}_{i:02d}.txt"
-        if not path.exists() or not key.exists() or key.read_text(encoding="utf-8") != f"{VOICE} {SPEED} {text}":
-            tts = tts or Kokoro(str(VO / "kokoro-v1.0.onnx"), str(VO / "voices-v1.0.bin"))
-            a, sr = tts.create(text, voice=VOICE, speed=SPEED, lang="en-gb")
-            sf.write(path, a, sr)
-            key.write_text(f"{VOICE} {SPEED} {text}", encoding="utf-8")
+        if not path.exists() or not key.exists() or key.read_text(encoding="utf-8") != f"{VOICE} {PACE} {text}":
+            subprocess.run(["edge-tts", "--voice", VOICE, f"--rate={PACE}", "--text", text, "--write-media", str(path)],
+                           check=True)
+            key.write_text(f"{VOICE} {PACE} {text}", encoding="utf-8")
         clips.append((at, mix_audio.pcm(path)))
     return clips
 
@@ -94,6 +87,8 @@ def lay(clips, secs):
     end = 0.0
     for at, c in clips:
         at = max(at, end + 0.35)  # never over the last line
+        loud = np.nonzero(np.abs(c).max(1) > 0.01)[0]  # the voice's own silence before and after
+        c = c[max(0, loud[0] - RATE // 20): loud[-1] + RATE // 8]
         c = c / max(1e-6, np.abs(c).max()) * 0.8
         s = int(at * RATE)
         e = min(n, s + len(c))
@@ -104,7 +99,7 @@ def lay(clips, secs):
     return voice, speaking
 
 
-def duck(speaking, low=0.32):
+def duck(speaking, low=0.22):
     """The music's level: down under the voice, eased in 0.35 s before a line and back out over a second after."""
     n = len(speaking)
     hop = RATE // 100

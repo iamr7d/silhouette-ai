@@ -43,7 +43,7 @@ CREDITS = [
     ("Produced by", "K P Ravishankar"),
     ("Directed by", "Sharath A Haridasan"),
     ("", ""),
-    ("Narration", "synthesised voice (Kokoro)"),
+    ("Narration", "synthesised voice, Microsoft Prabhat"),
     ("Type", "Marcellus, Geist, Manjari, Rachana"),
     ("", ""),
     ("With respect", None),

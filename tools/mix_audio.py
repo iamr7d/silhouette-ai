@@ -23,7 +23,7 @@ OUT = ROOT / "film"
 RATE = 48000
 MUSIC = OUT / "bgm.mp3"
 MUSIC_START = 22.0  # the recording is silent before this
-LEVEL = 0.33  # the recording is loud (about -10 dB); this sits it under the clicks
+LEVEL = 0.2  # the recording is loud (about -10 dB); this sits it under the clicks
 
 
 def pcm(path, start=0.0, secs=None):

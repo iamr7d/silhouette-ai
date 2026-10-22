@@ -107,4 +107,4 @@ The background music of the project films (the LinkedIn demo and the Instagram R
 Sivadas** (nadaswaram) and **Vishnuprasad Marar, Guruvayur** (edakka). It is from *Nadamohanam*
 (നാദമോഹനം), a project in the Abhinavabharatham series by Blue Planet Cinema, produced by
 K P Ravishankar and directed by Sharath A Haridasan. The recording is not part of this repository.
-The narration is a synthesised voice (Kokoro).
+The narration is a synthesised voice (Microsoft neural voice, Prabhat).
