@@ -66,4 +66,4 @@ The code is released under the [MIT Licence](LICENSE). The other material keeps 
 - **The UAL Creative Computing Institute logo** belongs to University of the Arts London and is not covered by the MIT
   licence.
 
-Rahul Raj · UAL Creative Computing Institute, London
+Rahulraj P V · UAL Creative Computing Institute, London

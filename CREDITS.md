@@ -1,6 +1,6 @@
 # Credits
 
-Silhouette.ai by Rahul Raj, UAL Creative Computing Institute, London. Everything in the app is either
+Silhouette.ai by Rahulraj P V, UAL Creative Computing Institute, London. Everything in the app is either
 freely licensed or made in code here.
 
 ## With thanks
@@ -99,3 +99,12 @@ is the fallback for title cards without the animation.
 - Manjari, by Santhosh Thottingal, Swathanthra Malayalam Computing (SMC), SIL Open Font License 1.1, served by Google Fonts (Malayalam text)
 - Rachana, the traditional-orthography Malayalam typeface by Hussain K. H. and Rachana Akshara Vedi, maintained by Swathanthra Malayalam Computing, SIL Open Font License 1.1, served by SMC (Malayalam headlines)
 - Built with plain HTML, CSS and JavaScript; Arduino sketch uses the Adafruit PWM Servo Driver Library (MIT)
+
+## Project films
+
+The background music of the project films (the LinkedIn demo and the Instagram Reel, not the app) is
+"Madhava mamava", Raga Neelambari, Thalam Aadhi, composed by Narayana Theerthar, played by **Vadasseri
+Sivadas** (nadaswaram) and **Vishnuprasad Marar, Guruvayur** (edakka). It is from *Nadamohanam*
+(നാദമോഹനം), a project in the Abhinavabharatham series by Blue Planet Cinema, produced by
+K P Ravishankar and directed by Sharath A Haridasan. The recording is not part of this repository.
+The narration is a synthesised voice (Kokoro).

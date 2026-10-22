@@ -53,7 +53,7 @@ THANKS = """<p class="k">Thank you</p>
 <p class="r" style="margin:0">And with respect to the pulavars, puppeteers and lamp keepers of Kerala's koothumadams, who made this art and have carried it for generations.</p>"""
 
 END = """<p class="t" aria-label="Silhouette.ai"><span class="w">Silhouette</span><span class="s">Studio · AI</span></p>
-<p class="n">Rahul Raj</p><p class="r" style="margin:0">UAL Creative Computing Institute, London</p>
+<p class="n">Rahulraj P V</p><p class="r" style="margin:0">UAL Creative Computing Institute, London</p>
 <div class="ual" role="img" aria-label="UAL Creative Computing Institute"></div>"""
 
 # (kind, seconds, subtitle, options)

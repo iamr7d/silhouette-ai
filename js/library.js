@@ -312,7 +312,7 @@ export function defaultProject() {
       kicker: "With respect",
       body: "To the pulavars, puppeteers and lamp keepers of Kerala's koothumadams,\nwho made this art and have carried it, night after night, for generations",
     }, 10.4, 13.8),
-    makeTitle("Title", { kicker: "Silhouette.ai · Rahul Raj", title: "Tholpavakoothu", body: "Sita is taken" }, 13.8, O),
+    makeTitle("Title", { kicker: "Silhouette.ai · Rahulraj P V", title: "Tholpavakoothu", body: "Sita is taken" }, 13.8, O),
   ].map((t) => fadeCard(t, t.card.video ? 0.25 : 0.7)); // the logo animation draws itself on, so it barely fades
 
   // Music: the real Tholpavakoothu recording, faded in and out.
