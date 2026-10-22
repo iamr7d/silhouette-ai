@@ -4,11 +4,15 @@ lamp glow and drifts slowly closer, then the credits roll and settle on the addr
 The title and the credits are set in the browser (Marcellus, Geist, Cormorant) and moved here, frame by frame, with
 sub-pixel steps, a little film grain and a vignette.
 
-Writes film/credits_16x9.mp4 and film/credits_9x16.mp4 (no sound).
-Usage: python tools/credits.py      (needs python serve.py running, and Microsoft Edge)
+Writes film/credits_16x9.mp4 and film/credits_9x16.mp4 (no sound), and the same without the narration's credit
+(credits_*_novoice.mp4) for the films without a voice, and with Rahulraj's own Malayalam narration
+(credits_*_ml.mp4).
+Usage: python tools/credits.py [variant ...]     (variants: voice, novoice, ml; all by default)
+Needs python serve.py running, and Microsoft Edge.
 """
 import io
 import subprocess
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -43,7 +47,7 @@ CREDITS = [
     ("Produced by", "K P Ravishankar"),
     ("Directed by", "Sharath A Haridasan"),
     ("", ""),
-    ("Narration", "synthesised voice, Microsoft Prabhat"),
+    ("Narration", "{narration}"),
     ("Type", "Marcellus, Geist, Manjari, Rachana"),
     ("", ""),
     ("With respect", None),
@@ -79,6 +83,9 @@ html, body { margin: 0; background: transparent; width: {w}px; }
 <div class="n">Open source</div></div>
 </body></html>"""
 
+NARRATION = {"voice": "synthesised voice, Microsoft Prabhat", "novoice": None,
+             "ml": "Rahulraj P V, in Malayalam"}
+
 SIZES = {
     "16x9": dict(w=1920, h=1080, tw=96, ts=30, ss=22, tt=56, it=40, gap=48, lm=12, rk=19, rv=34, hm=10, lm2=22, ro=34,
                  gh=46, ew=64, eu=40, es=30, en=40, secs=17.0),
@@ -87,9 +94,13 @@ SIZES = {
 }
 
 
-def rows():
+def rows(narration):
     out = []
     for k, v in CREDITS:
+        if k == "Narration":
+            if not narration:
+                continue
+            v = narration
         if k == "" and v == "":
             out.append('<div class="gap"></div>')
         elif v is None:
@@ -106,9 +117,9 @@ def ease(u):
     return u * u * (3 - 2 * u)
 
 
-def render(page, name, sz):
+def render(page, name, sz, narration):
     w, h, secs = sz["w"], sz["h"], sz["secs"]
-    html = PAGE.replace("{base}", BASE).replace("{rows}", rows())
+    html = PAGE.replace("{base}", BASE).replace("{rows}", rows(narration))
     for key, val in sz.items():
         html = html.replace("{" + key + "}", str(val))
     page.set_viewport_size({"width": w, "height": h})
@@ -189,7 +200,9 @@ def main():
         page = browser.new_page()
         page.goto(BASE + "film-studio.html")
         for key, sz in SIZES.items():
-            render(page, f"credits_{key}.mp4", sz)
+            for variant in sys.argv[1:] or NARRATION:
+                sfx = "" if variant == "voice" else f"_{variant}"
+                render(page, f"credits_{key}{sfx}.mp4", sz, NARRATION[variant])
         browser.close()
 
 

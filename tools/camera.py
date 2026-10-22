@@ -9,13 +9,15 @@ so every move starts early and slowly, lands softly, and never lags behind the h
 9:16: the whole studio on top, so it is always plain that this is an editor, with a thin gold box where the camera
 is; that place up close below it; the caption above both.
 
-Writes film/demo_video.mp4 and film/demo_vertical.mp4 (no sound), and a frame a second of each to look over.
-Usage: python tools/camera.py
+Writes film/demo_video.mp4 and film/demo_vertical.mp4 (no sound), and a frame a second of each to look over; with
+--no-captions, the same without the captions (*_nocap.mp4), for films subtitled from their narration instead.
+Usage: python tools/camera.py [--no-captions]
 """
 import io
 import json
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -106,17 +108,19 @@ def main():
     vcursor = cursor.resize((40, 58), Image.LANCZOS)
     scursor = cursor.resize((17, 25), Image.LANCZOS)
     caps, vcaps = {}, {}
-    for f in RAW.glob("cap_*.png"):
+    captions = "--no-captions" not in sys.argv
+    sfx = "" if captions else "_nocap"
+    for f in RAW.glob("cap_*.png") if captions else []:
         caps[int(f.stem[4:])] = Image.open(f).convert("RGBA")
-    for f in RAW.glob("vcap_*.png"):
+    for f in RAW.glob("vcap_*.png") if captions else []:
         vcaps[int(f.stem[5:])] = Image.open(f).convert("RGBA")
 
     cx, cy, zoom = plan(states, fps)
     nx, ny, nzoom = plan(states, fps, near=NEAR, aspect=NW / NH)
-    for d in ("demo_frames", "demo_frames_v"):
+    for d in ("demo_frames", "demo_frames_v") if captions else ():
         shutil.rmtree(OUT / d, ignore_errors=True)
         (OUT / d).mkdir()
-    ff, ffv = encoder("demo_video.mp4", fps), encoder("demo_vertical.mp4", fps)
+    ff, ffv = encoder(f"demo_video{sfx}.mp4", fps), encoder(f"demo_vertical{sfx}.mp4", fps)
     k = 1080 / W
     for i, s in enumerate(states):
         raw = Image.open(RAW / f"{i:05d}.jpg").convert("RGB")
@@ -154,7 +158,7 @@ def main():
             v.alpha_composite(c, ((1080 - c.width) // 2, CAP_Y - c.height // 2))
         ffv.stdin.write(jpeg(v, 92))
 
-        if i % fps == 0:
+        if i % fps == 0 and captions:
             img.convert("RGB").resize((960, 540)).save(OUT / "demo_frames" / f"{i // fps:03d}.jpg", quality=86)
             v.convert("RGB").resize((360, 640)).save(OUT / "demo_frames_v" / f"{i // fps:03d}.jpg", quality=86)
     for f in (ff, ffv):
