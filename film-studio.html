@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<title>Silhouette.ai · film, part two</title>
+<!-- The second part of the 9:16 project film: the studio, the thanks and the closing card. Rendered frame by frame by
+     tools/render_film.py through window.__seek, like index.html?video. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap">
+<style>
+  @font-face { font-family: "Geist"; src: url("fonts/geist.woff2") format("woff2"); }
+  @font-face { font-family: "Cinzel"; src: url("fonts/cinzel-500.woff2") format("woff2"); font-weight: 500; }
+  @font-face { font-family: "Cormorant Garamond"; src: url("fonts/cormorant-500-italic.woff2") format("woff2"); font-style: italic; font-weight: 500; }
+  :root { --gold: #d9b05a; --paper: #efe6d6; --text: #b8ad9b; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #0b0907; }
+  body { font-family: "Geist", sans-serif; color: var(--text); }
+  /* a low warm glow, as if the lamps were just out of frame */
+  .glow { position: absolute; inset: 0; background: radial-gradient(ellipse 90% 45% at 50% 105%, rgba(232, 140, 60, 0.22), transparent 70%); }
+  .scene { position: absolute; inset: 0; opacity: 0; }
+  .cap { position: absolute; left: 80px; right: 120px; top: 280px; }
+  .kicker { margin: 0 0 28px; font: 500 26px / 1 "Geist", sans-serif; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); }
+  .title { margin: 0 0 30px; font: italic 500 100px / 1.02 "Cormorant Garamond", serif; color: var(--paper); }
+  .sub { margin: 0; max-width: 880px; font: 400 38px / 1.45 "Geist", sans-serif; color: var(--text); }
+  .shot {
+    position: absolute;
+    left: 50px;
+    right: 50px;
+    top: 800px;
+    height: 680px;
+    overflow: hidden;
+    border-radius: 18px;
+    background: #111;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(217, 176, 90, 0.25);
+  }
+  .shot img { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+  .center { position: absolute; left: 80px; right: 80px; top: 50%; transform: translateY(-50%); text-align: center; }
+  .name { font: 500 40px / 1.2 "Cinzel", serif; letter-spacing: 0.14em; text-transform: uppercase; color: var(--paper); margin: 0 0 14px; }
+  .role { font: italic 500 40px / 1.35 "Cormorant Garamond", serif; color: var(--text); margin: 0 0 70px; }
+  .respect { font: italic 500 50px / 1.35 "Cormorant Garamond", serif; color: var(--paper); margin: 0; }
+  .ual {
+    width: 640px;
+    aspect-ratio: 512 / 100;
+    margin: 0 auto 120px;
+    background: linear-gradient(180deg, #fff3cf 0%, #ffd56b 32%, #e0a12c 62%, #b97818 82%, #f4cf7a 100%);
+    -webkit-mask: url("assets/logo-ual-cci.png") center / contain no-repeat;
+    mask: url("assets/logo-ual-cci.png") center / contain no-repeat;
+  }
+  /* the wordmark, as on the site: Marcellus capitals, "Studio · AI" small beneath */
+  .end-title { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 30px; }
+  .end-title .w { font: 400 84px/1 "Marcellus", serif; letter-spacing: .28em; margin-right: -.28em; text-transform: uppercase; color: #f1ecdf; }
+  .end-title .s { font: 400 22px/1 "Geist", sans-serif; letter-spacing: .6em; margin-right: -.6em; text-transform: uppercase; color: rgba(214,222,240,.72); }
+  .end-name { margin: 50px 0 0; font: 500 32px / 1 "Cinzel", serif; letter-spacing: 0.5em; margin-right: -0.5em; text-transform: uppercase; color: rgba(239, 230, 214, 0.8); }
+  .end-where { margin: 26px 0 0; font: 400 28px / 1.4 "Geist", sans-serif; color: var(--text); }
+  .end-type { margin: 90px 0 0; font: 400 22px / 1.6 "Geist", sans-serif; color: rgba(184, 173, 155, 0.75); }
+</style>
+</head>
+<body>
+<div class="glow"></div>
+
+<!-- Each scene: [start, end] in seconds; a shot pans from one crop of a studio screen to another (x, y, width in the
+     1920 × 1080 screenshot). -->
+<section class="scene" data-s="0" data-e="4.5" data-img="film/studio/02_lights.png" data-from="0,0,1390" data-to="560,40,1100">
+  <div class="cap">
+    <p class="kicker">Silhouette.ai</p>
+    <h1 class="title">A studio for shadow theatre.</h1>
+    <p class="sub">An editor in the browser for Tholpavakoothu and every shadow tradition: figures, lamps, story and sound on one timeline.</p>
+  </div>
+  <div class="shot"><img alt=""></div>
+</section>
+
+<section class="scene" data-s="4.5" data-e="8.5" data-img="film/studio/02_lights.png" data-from="0,30,820" data-to="20,30,520">
+  <div class="cap">
+    <p class="kicker">Lights</p>
+    <h2 class="title">Twenty-one lamps, or any light.</h2>
+    <p class="sub">Clay chirattas, brass deepams, bulbs, LEDs, spots and gels, placed, dimmed and coloured over time.</p>
+  </div>
+  <div class="shot"><img alt=""></div>
+</section>
+
+<section class="scene" data-s="8.5" data-e="12.5" data-img="film/studio/03_back.png" data-from="812,60,1108" data-to="1000,200,700">
+  <div class="cap">
+    <p class="kicker">Front and back</p>
+    <h2 class="title">Both sides of the cloth.</h2>
+    <p class="sub">Watch as the audience does, or from where the puppeteers stand, with the lamps before you.</p>
+  </div>
+  <div class="shot"><img alt=""></div>
+</section>
+
+<section class="scene" data-s="12.5" data-e="16.5" data-img="film/studio/05_show.png" data-from="1000,640,600" data-to="1240,650,560">
+  <div class="cap">
+    <p class="kicker">Timeline</p>
+    <h2 class="title">Every figure, keyframed.</h2>
+    <p class="sub">Position, tilt, distance from the cloth and jointed limbs, with movements like walk, bow, strike and loom.</p>
+  </div>
+  <div class="shot"><img alt=""></div>
+</section>
+
+<section class="scene" data-s="16.5" data-e="20.5" data-img="film/studio/04_motors.png" data-from="0,30,620" data-to="0,30,480">
+  <div class="cap">
+    <p class="kicker">Motors</p>
+    <h2 class="title">Real puppets, real lamps.</h2>
+    <p class="sub">Servos and lamps on an Arduino, driven from the timeline or played live with the puppeteer's own controls.</p>
+  </div>
+  <div class="shot"><img alt=""></div>
+</section>
+
+<section class="scene" data-s="20.5" data-e="25.5">
+  <div class="center">
+    <p class="kicker" style="margin-bottom: 70px">With thanks</p>
+    <p class="name">Vipin Viswanathan Pulavar</p>
+    <p class="role">fifteenth-generation Tholpavakoothu artist,<br>for the first lessons and his mentoring</p>
+    <p class="name">Hooman Samani</p>
+    <p class="role">UAL Creative Computing Institute,<br>for guidance on robotics</p>
+    <p class="kicker" style="margin: 30px 0 40px">With respect</p>
+    <p class="respect">To the pulavars, puppeteers and lamp keepers of Kerala's koothumadams, who made this art and have carried it, night after night, for generations.</p>
+  </div>
+</section>
+
+<section class="scene" data-s="25.5" data-e="30">
+  <div class="center">
+    <div class="ual" role="img" aria-label="UAL Creative Computing Institute"></div>
+    <h2 class="end-title" aria-label="Silhouette.ai"><span class="w">Silhouette</span><span class="s">Studio · AI</span></h2>
+    <p class="end-name">Rahul Raj</p>
+    <p class="end-where">UAL Creative Computing Institute, London</p>
+    <p class="end-type">Type: Marcellus · Geist · Cinzel · Cormorant Garamond · Manjari · Rachana (SMC)<br>Figures: Museu do Oriente, Lisbon, by Daderot, CC0</p>
+  </div>
+</section>
+
+<script>
+  const FADE = 0.7;
+  const LENGTH = 30;
+  const SHOT_W = 980; // the shot frame's width in the film
+  const SHOT_H = 680;
+  const scenes = [...document.querySelectorAll(".scene")].map((el) => {
+    const img = el.querySelector("img");
+    if (img) img.src = el.dataset.img;
+    const crop = (s) => s.split(",").map(Number);
+    return { el, img, s: +el.dataset.s, e: +el.dataset.e, from: el.dataset.from && crop(el.dataset.from), to: el.dataset.to && crop(el.dataset.to) };
+  });
+  const ease = (k) => k * k * (3 - 2 * k);
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  window.__seek = (sec) => {
+    for (const sc of scenes) {
+      const fadeIn = sc.s === 0 ? 1 : clamp((sec - sc.s) / FADE, 0, 1);
+      const fadeOut = sc.e === LENGTH ? clamp((LENGTH - sec) / 1.6, 0, 1) : clamp((sc.e - sec) / FADE, 0, 1);
+      const o = sec < sc.s - 0.001 || sec > sc.e ? 0 : Math.min(fadeIn, fadeOut);
+      sc.el.style.opacity = o.toFixed(3);
+      const k = ease(clamp((sec - sc.s) / (sc.e - sc.s), 0, 1));
+      // the words rise a little as they come in
+      const cap = sc.el.querySelector(".cap, .center");
+      if (cap) cap.style.translate = `0 ${((1 - ease(fadeIn)) * 30).toFixed(1)}px`;
+      if (sc.img && sc.from) {
+        // pan and zoom between two crops of the screenshot, keeping the crop's centre in the frame's centre
+        const [x0, y0, w0] = sc.from;
+        const [x1, y1, w1] = sc.to;
+        const x = x0 + (x1 - x0) * k, y = y0 + (y1 - y0) * k, w = w0 + (w1 - w0) * k;
+        const scale = SHOT_W / w;
+        sc.img.style.transform = `scale(${scale.toFixed(4)}) translate(${(-x).toFixed(1)}px, ${(-y).toFixed(1)}px)`;
+      }
+    }
+    return sec;
+  };
+  window.__ready = Promise.all([document.fonts.ready, ...[...document.images].map((im) => im.decode().catch(() => {}))]);
+  window.__seek(0);
+</script>
+</body>
+</html>

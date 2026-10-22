@@ -1,0 +1,10 @@
+# Rendered films and the tools that make them, and the local server: not part of the site.
+film/
+tools/
+serve.py
+__pycache__/
+*.py
+
+# Local secrets written by the Vercel CLI
+.env*
+.vercel/

@@ -1,0 +1,32 @@
+[
+ {
+  "name": "ganesh",
+  "w": 1194,
+  "h": 1200,
+  "flipped": false
+ },
+ {
+  "name": "rama",
+  "w": 1030,
+  "h": 1200,
+  "flipped": false
+ },
+ {
+  "name": "ravana",
+  "w": 872,
+  "h": 1200,
+  "flipped": true
+ },
+ {
+  "name": "sita",
+  "w": 938,
+  "h": 1200,
+  "flipped": true
+ },
+ {
+  "name": "vishnu",
+  "w": 1380,
+  "h": 931,
+  "flipped": false
+ }
+]

@@ -1,0 +1,8 @@
+# Rendered films and their working files (large; published separately)
+film/
+# Local secrets and the Vercel link
+.env*
+.vercel/
+# Python
+__pycache__/
+*.pyc

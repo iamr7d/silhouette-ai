@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Silhouette.ai · Tholpavakoothu, played on scroll</title>
+<meta name="description" content="Tholpavakoothu, the leather shadow puppetry of Kerala and Tamil Nadu, played on a lamp-lit cloth as you scroll, and a studio for making shadow theatre of your own.">
+<!-- Marcellus (the wordmark) and Malayalam Manjari from Google Fonts; Rachana from Swathanthra Malayalam Computing, which publishes it (it is not on Google Fonts). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manjari:wght@400;700&family=Marcellus&display=swap">
+<link rel="stylesheet" href="https://smc.org.in/fonts/rachana.css">
+<link rel="stylesheet" href="landing.css">
+</head>
+<body>
+
+<header class="bar away">
+  <a class="mark" href="#top">Silhouette.ai</a>
+  <div class="bar-r">
+    <button class="lang" id="lang" type="button" lang="ml" aria-pressed="false" title="Read in Malayalam">മലയാളം</button>
+    <button class="sound" id="sound" type="button" aria-pressed="false" aria-label="Play the music" title="Music"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" stroke="none"/><path class="waves" d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="mute" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button>
+    <a class="enter" href="studio.html">The studio</a>
+  </div>
+</header>
+
+<main id="top">
+  <!-- The performance: the whole window is the cloth, and scrolling moves the night forward. -->
+  <div class="performance">
+    <div class="theatre">
+      <div class="screen" id="screen">
+        <canvas id="light-canvas"></canvas>
+        <!-- The opening: a blue night with a small moon, before the lamps are lit. -->
+        <div class="night" id="night"></div>
+        <!-- Banyan branches and aerial roots hang between the lamps and the cloth, so they fall on it as shadows. -->
+        <div class="banyan" id="banyan" aria-hidden="true"></div>
+        <div class="falling" id="falling" aria-hidden="true"></div>
+        <div class="puppets" id="puppets"></div>
+        <canvas id="fx-canvas"></canvas>
+        <div class="titles" id="titles"></div>
+        <div class="safe" id="safe" hidden></div>
+      </div>
+      <p class="caption" id="caption" hidden></p>
+      <p class="cue" id="cue">Scroll to light the lamps</p>
+      <div class="ruler" aria-hidden="true"><span id="ruler-fill"></span></div>
+    </div>
+
+    <div class="chapters">
+      <section class="ch ch-first" data-t0="0" data-t1="4" data-name="The lamps" data-pos="ml">
+        <div class="txt">
+          <p class="no">I</p>
+          <h2 class="ml-title" lang="ml">തോൽപ്പാവക്കൂത്ത്</h2>
+          <p class="film-only">Tholpavakoothu, the leather shadow puppetry of Kerala and Tamil Nadu.</p>
+          <p>Shadow puppetry of Kerala and Tamil Nadu, played with leather puppets in Kerala's Palakkad, Thrissur and Malappuram districts and around Madurai. In Kerala it is dedicated to the goddess Bhadrakali, who was fighting the demon Darika when Rama killed Ravana, and so has the war played again for her.</p>
+        </div>
+      </section>
+
+      <section class="ch" data-t0="4" data-t1="8" data-name="Invocation" data-pos="tr">
+        <div class="txt">
+          <p class="no">II</p>
+          <h2 class="line">Before the story, Ganapati.</h2>
+          <p>A night opens with an invocation to Ganesh and to the performers' gurus, and runs until daybreak. The whole Ramayana takes twenty-one nights, between January and May.</p>
+        </div>
+      </section>
+
+      <section class="ch" data-t0="8" data-t1="14" data-name="Rama and Sita" data-pos="c">
+        <div class="txt">
+          <p class="no">III</p>
+          <h2 class="line">The Kamba Ramayana, sung through the night.</h2>
+          <p>The pulavar sings Kambar's Tamil verses and explains them in Tamil, Malayalam and Sanskrit: more than three thousand verses, learned over six to ten years.</p>
+        </div>
+      </section>
+
+      <section class="ch" data-t0="14" data-t1="20" data-name="Ravana" data-pos="tl">
+        <div class="txt">
+          <p class="no">IV</p>
+          <h2 class="line">A shadow grows as it leaves the cloth.</h2>
+          <p>Each figure is held flat to the cloth on two sticks, one for the body and a thinner one for an arm. Drawn back toward the lamps, its shadow swells and softens. Ravana arrives like that, and sharpens as he reaches the cloth.</p>
+        </div>
+      </section>
+
+      <section class="ch" data-t0="20" data-t1="24" data-name="Behind the cloth" data-pos="bl">
+        <div class="txt">
+          <p class="no">V</p>
+          <h2 class="line">The other side.</h2>
+          <p>Where the puppeteers stand: twenty-one <em>chirattas</em>, halved coconut shells of oil, each with a cotton wick, on the <em>vilakku madam</em>, a beam about 1.3 metres up, along a stage some forty-two feet long.</p>
+        </div>
+      </section>
+
+      <section class="ch ch-long" data-t0="24" data-t1="40" data-name="The figures" data-pos="tl">
+        <div class="txt">
+          <p class="no">VI</p>
+          <h2 class="line">Two hundred figures, cut from hide.</h2>
+          <p>Goat skin, once deerskin, punched so the light shows through and coloured with vegetable dyes. Some stand four feet tall, and a full telling needs 180 to 200 of them.</p>
+          <p class="aside">The figures passing now are museum pieces from several Indian traditions, in the Museu do Oriente, Lisbon.</p>
+        </div>
+      </section>
+
+      <section class="ch ch-long" data-t0="40" data-t1="46" data-name="History" data-pos="tr">
+        <div class="txt">
+          <p class="no">VII</p>
+          <h2 class="line">Nobody agrees how old it is.</h2>
+          <p>Accounts place its beginnings anywhere between the ninth and the eighteenth century. Families of pulavars have carried it since, from the temple to Tashkent in 1979, and to the first all-women troupe in 2021.</p>
+          <p><a class="more" href="#notes">A short chronology</a></p>
+        </div>
+      </section>
+
+      <section class="ch ch-last" data-t0="46" data-t1="50" data-name="The studio" data-pos="c">
+        <div class="txt">
+          <p class="no">VIII</p>
+          <h2 class="line">A studio for shadow theatre.</h2>
+          <p>Silhouette.ai is where this page was made: the real screen and lamps, figures on sticks, a timeline, sound and title cards, and motors for real puppets.</p>
+          <p><a class="go" href="studio.html">Enter the studio</a></p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Colophon -->
+  <footer class="colophon">
+    <div class="col wide" id="notes">
+      <h3>A short chronology</h3>
+      <ol class="years">
+        <li><b>c. 300 CE</b><span>The earliest known mention of <em>pavaikoothu</em>, puppet play with leather or wooden dolls, is in the Thirukkural (kural 1020).</span></li>
+        <li><b>Origins</b><span>Debated: some place the beginnings of Tholpavakoothu in the ninth or tenth century, others in the eighteenth. It was played in Bhadrakali temples even before the Kamba Ramayana became its text.</span></li>
+        <li><b>1979</b><span>Krishnankutty Pulavar of Koonathara takes his troupe abroad for the first time, to Tashkent, India's only entry at a festival of puppet theatre from 55 countries.</span></li>
+        <li><b>Since</b><span>Padma Shri Ramachandra Pulavar leads the Kavalappara troupe in Palakkad and brings in new stories: Gandhi, Jesus Christ, and plays on drink, litter and women's safety.</span></li>
+        <li><b>2016</b><span>Rajeev Pulavar receives the Ustad Bismillah Khan Yuva Puraskar.</span></li>
+        <li><b>2021</b><span>Rajitha, the first woman in the troupe, starts Pen Pavakoothu, the first all-women Tholpavakoothu troupe.</span></li>
+        <li><b>2021</b><span>Leather puppets moved by machines are shown, reported as tradition meeting technology.</span></li>
+      </ol>
+      <p class="note">The music of the night is carried by the <em>ezhupara</em> drum and the <em>ilathalam</em> cymbals; the conch, the <em>chenda</em> and <em>maddalam</em> drums and the <em>chengila</em> gong are kept for great moments. A troupe on the road is often eight: five to work the figures, two to sing, one to play.</p>
+    </div>
+    <div class="col">
+      <h3>With thanks</h3>
+      <p><span class="name">Vipin Viswanathan Pulavar</span>, for the first lessons and his mentoring. He is the fifteenth generation of a Tholpavakoothu family: son of K. Vishwanatha Pulavar, grandson of K. L. Krishnankutty Pulavar. His honours include the Kerala Folklore Academy award, the Kerala Kshethrakala Akademi Gurupooja award (2024) and Outlook's Responsible Tourism Culture and Heritage award, as one to watch (2025).</p>
+      <p><span class="name">Hooman Samani</span>, UAL Creative Computing Institute, for guidance on robotics.</p>
+      <h3 class="gap">With respect</h3>
+      <p>To the pulavars, puppeteers and lamp keepers of Kerala's koothumadams, who made this art and have carried it, night after night, for generations.</p>
+    </div>
+    <div class="col">
+      <h3>Sources</h3>
+      <ul class="src">
+        <li><a href="https://en.wikipedia.org/wiki/Tholpavakoothu" target="_blank" rel="noopener">Wikipedia, Tholpavakoothu</a></li>
+        <li><a href="https://keralamuseum.org/wp-content/uploads/2024/09/Striving-Not-Dying_-The-Koonathara-Shadow-Puppeteers-and-Tholpavakoothu.pdf" target="_blank" rel="noopener">Museum of Kerala History, “Striving, Not Dying”</a></li>
+        <li><a href="https://www.sahapedia.org/conversation-ramachandra-pulavar" target="_blank" rel="noopener">Sahapedia, a conversation with Ramachandra Pulavar</a></li>
+        <li><a href="https://www.onmanorama.com/entertainment/art-and-culture/2019/02/01/how-keralas-puppetry-has-emerged-from-shadow.amp.html" target="_blank" rel="noopener">Onmanorama</a></li>
+        <li><a href="https://www.thepolisproject.com/read/tholpavakoothu-puppetry-art" target="_blank" rel="noopener">The Polis Project</a></li>
+        <li><a href="https://wagtail.ruralindiaonline.org/en/articles/the-puppets-shadows-reflect-our-struggles/" target="_blank" rel="noopener">PARI</a></li>
+        <li><a href="https://www.aljazeera.com/features/2021/7/5/technology-meets-tradition-keralas-robotic-leather-puppets" target="_blank" rel="noopener">Al Jazeera</a></li>
+      </ul>
+      <h3 class="gap">Credits</h3>
+      <p>Figures: Museu do Oriente, Lisbon, photographed by Daderot, <a href="https://commons.wikimedia.org/wiki/Category:Shadow_puppets_from_India_in_the_Museu_do_Oriente" target="_blank" rel="noopener">Wikimedia Commons</a>, CC0. The full list is in <a href="CREDITS.md">the credits</a>. Crediting a work is not permission to reuse it; performance films are referenced, not reproduced.</p>
+      <p>Type: Marcellus by Astigmatic (the wordmark); Geist by Vercel; Cinzel by Natanael Gama; Cormorant Garamond by Christian Thalmann; Malayalam in Manjari by Santhosh Thottingal and Rachana by Hussain K. H. and Rachana Akshara Vedi, both from Swathanthra Malayalam Computing. All under the SIL Open Font License.</p>
+    </div>
+    <div class="sign">
+      <div class="ual" role="img" aria-label="UAL Creative Computing Institute"></div>
+      <p>Silhouette.ai · Rahul Raj · UAL Creative Computing Institute, London</p>
+    </div>
+  </footer>
+</main>
+
+<audio id="music" src="assets/audio/pavakkoothu.mp3" loop preload="none"></audio>
+<script type="module" src="landing.js"></script>
+</body>
+</html>

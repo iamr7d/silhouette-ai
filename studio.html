@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Silhouette.ai</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="menubar">
+  <a class="app-name" href="index.html" title="Back to the Silhouette.ai home page"><span class="app-icon" data-icon="lamp"></span>Silhouette.ai</a>
+  <nav class="menus">
+    <div class="menu">
+      <button class="menu-btn">File</button>
+      <div class="menu-list">
+        <button data-cmd="new-empty">New empty show</button>
+        <button data-cmd="new-sample">Open the sample show</button>
+        <hr>
+        <button data-cmd="save">Save<kbd>Ctrl+S</kbd></button>
+        <button data-cmd="import-media">Import images or audio…<kbd>Ctrl+I</kbd></button>
+        <button data-cmd="import-show">Open a show file…</button>
+        <button data-cmd="export">Export show file…</button>
+      </div>
+    </div>
+    <div class="menu">
+      <button class="menu-btn">Edit</button>
+      <div class="menu-list">
+        <button data-cmd="undo">Undo<kbd>Ctrl+Z</kbd></button>
+        <button data-cmd="redo">Redo<kbd>Ctrl+Shift+Z</kbd></button>
+        <hr>
+        <button data-cmd="delete">Delete keyframe or clip<kbd>Delete</kbd></button>
+      </div>
+    </div>
+    <div class="menu">
+      <button class="menu-btn">Sequence</button>
+      <div class="menu-list">
+        <button data-cmd="play">Play / Stop<kbd>Space</kbd></button>
+        <button data-cmd="scene-add">Add scene at playhead<kbd>M</kbd></button>
+        <hr>
+        <button data-cmd="zoom-in">Zoom in<kbd>=</kbd></button>
+        <button data-cmd="zoom-out">Zoom out<kbd>-</kbd></button>
+        <button data-cmd="zoom-fit">Zoom to sequence<kbd>\</kbd></button>
+        <hr>
+        <button data-cmd="snap">Snap in timeline<kbd>S</kbd></button>
+        <button data-cmd="loop">Loop playback</button>
+      </div>
+    </div>
+    <div class="menu">
+      <button class="menu-btn">Window</button>
+      <div class="menu-list">
+        <button data-cmd="tab-effects">Effect Controls</button>
+        <button data-cmd="tab-show">Show and screen</button>
+        <button data-cmd="tab-story">Story</button>
+        <button data-cmd="tab-lights">Lights</button>
+        <button data-cmd="tab-motors">Motors</button>
+        <button data-cmd="figure-3d">Figure in 3D</button>
+        <hr>
+        <button data-cmd="reset-layout">Reset panel layout</button>
+      </div>
+    </div>
+    <div class="menu">
+      <button class="menu-btn">Help</button>
+      <div class="menu-list">
+        <button data-cmd="shortcuts">Keyboard shortcuts<kbd>?</kbd></button>
+        <button data-cmd="tab-show">About the traditions</button>
+      </div>
+    </div>
+  </nav>
+  <div class="doc-state"><span id="doc-title"></span><span class="dot" id="save-dot"></span><span id="save-state">Saved</span></div>
+</header>
+
+<main class="workspace" id="workspace">
+  <section class="panel" style="grid-area: ec">
+    <div class="tabs">
+      <button class="tab active" data-tab="effects">Effect Controls</button>
+      <button class="tab" data-tab="show">Show</button>
+      <button class="tab" data-tab="story">Story</button>
+      <button class="tab" data-tab="lights">Lights</button>
+      <button class="tab" data-tab="motors">Motors</button>
+    </div>
+    <div class="tab-body" id="tab-effects"></div>
+    <div class="tab-body" id="tab-show" hidden></div>
+    <div class="tab-body" id="tab-story" hidden></div>
+    <div class="tab-body" id="tab-lights" hidden></div>
+    <div class="tab-body" id="tab-motors" hidden></div>
+  </section>
+
+  <div class="split split-v" data-split="col" style="grid-area: v1"></div>
+
+  <section class="panel" style="grid-area: pm">
+    <div class="tabs"><span class="tab active">Program: Sequence 01</span></div>
+    <div class="pm-view">
+      <div class="screen" id="screen">
+        <canvas id="light-canvas"></canvas>
+        <div class="puppets" id="puppets"></div>
+        <canvas id="fx-canvas"></canvas>
+        <div class="titles" id="titles"></div>
+        <div class="safe" id="safe" hidden></div>
+      </div>
+      <!-- Subtitles sit below the cloth, in the dark band, as in performance films. -->
+      <div class="caption" id="caption" hidden></div>
+    </div>
+    <div class="pm-bar">
+      <span class="tc tc-blue" id="pm-tc">00:00:00:00</span>
+      <div class="seg" title="Which side of the cloth you watch from">
+        <button data-cmd="view-front" id="view-front">Front</button>
+        <button data-cmd="view-back" id="view-back">Back</button>
+      </div>
+      <select class="select" id="pm-zoom" title="Zoom level">
+        <option value="1">Fit</option>
+        <option value="0.75">75%</option>
+        <option value="0.5">50%</option>
+        <option value="0.25">25%</option>
+      </select>
+      <span class="tc" id="pm-dur">00:00:30:00</span>
+    </div>
+    <div class="transport">
+      <button class="ib" data-cmd="start" data-icon="start" title="Go to start (Home)"></button>
+      <button class="ib" data-cmd="prev-frame" data-icon="prev" title="Step back 1 frame (Left)"></button>
+      <button class="ib play" data-cmd="play" id="btn-play" data-icon="play" title="Play / Stop (Space)"></button>
+      <button class="ib" data-cmd="next-frame" data-icon="next" title="Step forward 1 frame (Right)"></button>
+      <button class="ib" data-cmd="end" data-icon="end" title="Go to end (End)"></button>
+      <span class="transport-sep"></span>
+      <button class="ib" data-cmd="loop" id="btn-loop" data-icon="loop" title="Loop playback"></button>
+      <button class="ib" data-cmd="safe" id="btn-safe" data-icon="safe" title="Safe margins"></button>
+    </div>
+  </section>
+
+  <div class="split split-h" data-split="row" style="grid-area: h"></div>
+
+  <section class="panel" style="grid-area: pr">
+    <div class="tabs">
+      <button class="tab ptab active" data-ptab="project">Project</button>
+      <button class="tab ptab" data-ptab="library">Library</button>
+    </div>
+    <div class="pr-tools">
+      <input class="search" id="pr-search" type="search" placeholder="Search" autocomplete="off">
+      <button class="ib" data-act="import-media" data-icon="import" title="Import images or audio (Ctrl+I)"></button>
+      <button class="ib" data-act="view-list" id="pr-view-list" data-icon="list" title="List view"></button>
+      <button class="ib" data-act="view-grid" id="pr-view-grid" data-icon="grid" title="Icon view"></button>
+    </div>
+    <div class="pr-items" id="pr-items"></div>
+    <div class="pr-foot" id="pr-foot"></div>
+  </section>
+
+  <div class="split split-v" data-split="col" style="grid-area: v2"></div>
+
+  <section class="panel" style="grid-area: tl">
+    <div class="tabs"><span class="tab active">Sequence 01</span></div>
+    <div class="tl-scroll" id="tl-scroll"><div class="tl-grid" id="tl-grid"></div></div>
+    <div class="tl-foot">
+      <span class="muted">Zoom</span>
+      <input type="range" id="tl-zoom" min="4" max="400" value="40">
+      <span class="tl-hint">Drag clips to move · drag edges to trim · drag the ruler to scrub · click a scene to open it</span>
+    </div>
+  </section>
+</main>
+
+<div class="ctx" id="ctx" hidden></div>
+<div class="toast" id="toast" hidden></div>
+<input type="file" id="media-file" accept="image/*,audio/*" multiple class="sr-only">
+<input type="file" id="part-file" accept="image/*" class="sr-only">
+<input type="file" id="show-file" accept="application/json,.json" class="sr-only">
+
+<dialog id="dlg-form" class="form-dlg"></dialog>
+<dialog id="dlg-3d" class="dlg-3d"></dialog>
+
+<dialog id="dlg-help">
+  <div class="dlg-head">Keyboard shortcuts<button class="ib" data-cmd="close-dialog" data-icon="close" title="Close"></button></div>
+  <table class="keys">
+    <tr><td><kbd>Space</kbd></td><td>Play / stop</td></tr>
+    <tr><td><kbd>J</kbd> <kbd>K</kbd> <kbd>L</kbd></td><td>Shuttle back, stop, forward (press again for faster)</td></tr>
+    <tr><td><kbd>Left</kbd> <kbd>Right</kbd></td><td>Step one frame (Shift: five frames)</td></tr>
+    <tr><td><kbd>Up</kbd> <kbd>Down</kbd></td><td>Previous / next keyframe on the selection</td></tr>
+    <tr><td><kbd>Home</kbd> <kbd>End</kbd></td><td>Go to start / end</td></tr>
+    <tr><td><kbd>M</kbd></td><td>Add a scene at the playhead</td></tr>
+    <tr><td><kbd>Delete</kbd></td><td>Delete the selected keyframe, or else the selected clip or light</td></tr>
+    <tr><td><kbd>Ctrl+Z</kbd> <kbd>Ctrl+Shift+Z</kbd></td><td>Undo / redo</td></tr>
+    <tr><td><kbd>Ctrl+S</kbd> <kbd>Ctrl+I</kbd></td><td>Save / import images or audio</td></tr>
+    <tr><td><kbd>=</kbd> <kbd>-</kbd> <kbd>\</kbd></td><td>Zoom timeline in / out / to sequence</td></tr>
+    <tr><td><kbd>S</kbd></td><td>Snap on or off</td></tr>
+    <tr><td>Drag a blue value</td><td>Change it (Shift: faster, Ctrl: finer). Click to type.</td></tr>
+    <tr><td>Drop files</td><td>Images become characters, audio becomes a sound clip</td></tr>
+    <tr><td>Double-click a figure</td><td>See it in 3D: turn, tilt and move its parts</td></tr>
+    <tr><td><kbd>Esc</kbd></td><td>Finish shaping a figure's parts on the screen</td></tr>
+  </table>
+</dialog>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
