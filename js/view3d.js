@@ -27,7 +27,7 @@ function slider(key, label, min, max, value, unit = "°", step = 0.5) {
 }
 
 function build() {
-  const src = imageURL(it.asset);
+  const src = imageURL(it.asset, it.render);
   const t = S.t;
   const layers = Array.from({ length: LAYERS }, (_, i) =>
     `<div class="v3-layer${i === 0 || i === LAYERS - 1 ? " face" : " edge"}" data-i="${i}">${figureHTML(it, src, "", i === 0)}</div>`).join("");

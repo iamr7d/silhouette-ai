@@ -48,6 +48,25 @@ These are painted, translucent figures, so for the shadow on the cloth each is m
 - chariot: [DSC06688](https://commons.wikimedia.org/wiki/File:Rama_in_his_chariot_-_Museu_do_Oriente_-_Lisbon,_Portugal_-_DSC06688.JPG)
 - clown: [DSC06676](https://commons.wikimedia.org/wiki/File:Clown_-_Museu_do_Oriente_-_Lisbon,_Portugal_-_DSC06676.JPG)
 
+## Figures of the other traditions
+
+Each tradition in the studio has its own cast. All of these were photographed by **Daderot**, cut out with
+`tools/cutout_puppets.py` with their colours kept, and are listed with their Commons pages in
+`assets/puppets/sources.json`.
+
+- Ravana Chhaya (Odisha): Rama, Sita and Ravana, Museu do Oriente, Lisbon, **CC0 1.0**
+- Tholu bommalata (Andhra Pradesh): Rama, Sita, Ravana and a deer, Museu do Oriente, Lisbon, **CC0 1.0**
+- Wayang kulit (Bali): a fire kayon and six figures, Museu do Oriente, Lisbon, **CC0 1.0**
+- Karagöz (Ottoman Turkey): Karagöz as a frog and as a turtle, Ermeni, Çelebi with a woman, a witch and baby Ruhi,
+  Museu do Oriente, Lisbon, **CC0 1.0**
+- Chinese shadow play (Qing dynasty, *The Legend of the White Snake* and others): Xu Xian, the White Snake, the Green
+  Snake, Fahai, Weituo and Kuixing, Sichuan Provincial Museum, Chengdu, **public domain**
+- Togalu gombeyaata (Karnataka): no labelled figures were found, so its cast is the museum's painted Indian figures
+  whose tradition is not recorded (above).
+
+Some of the Wayang figures are not identified by the museum; their names in the studio (Knight, Lady, Deity, Ogre)
+describe them and are ours.
+
 ## Music and sound
 
 The default music is the **Tholpavakoothu recording** played on the ShadowStage section of the

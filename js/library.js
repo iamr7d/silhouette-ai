@@ -3,33 +3,100 @@ import { FW, K, S, getProp, makeProps, snapT, sortKeys, uid, valueAt } from "./c
 
 // Tholpavakoothu figures photographed in the Museu do Oriente, Lisbon (Wikimedia Commons, CC0).
 export const BUILTIN_IMAGES = [
-  { id: "img:rama", name: "Rama", src: "assets/puppets/rama.webp", flip: false, source: "Tholpavakoothu figure" },
-  { id: "img:ravana", name: "Ravana", src: "assets/puppets/ravana.webp", flip: true, source: "Tholpavakoothu figure" },
-  { id: "img:sita", name: "Sita", src: "assets/puppets/sita.webp", flip: true, source: "Tholpavakoothu figure" },
-  { id: "img:ganesh", name: "Ganesh", src: "assets/puppets/ganesh.webp", flip: false, source: "Tholpavakoothu figure" },
-  { id: "img:vishnu", name: "Vishnu", src: "assets/puppets/vishnu.webp", flip: false, source: "Tholpavakoothu figure" },
+  { id: "img:rama", name: "Rama", src: "assets/puppets/rama.webp", flip: false, source: "Tholpavakoothu figure", tradition: "tholpavakoothu" },
+  { id: "img:ravana", name: "Ravana", src: "assets/puppets/ravana.webp", flip: true, source: "Tholpavakoothu figure", tradition: "tholpavakoothu" },
+  { id: "img:sita", name: "Sita", src: "assets/puppets/sita.webp", flip: true, source: "Tholpavakoothu figure", tradition: "tholpavakoothu" },
+  { id: "img:ganesh", name: "Ganesh", src: "assets/puppets/ganesh.webp", flip: false, source: "Tholpavakoothu figure", tradition: "tholpavakoothu" },
+  { id: "img:vishnu", name: "Vishnu", src: "assets/puppets/vishnu.webp", flip: false, source: "Tholpavakoothu figure", tradition: "tholpavakoothu" },
   // More figures from the same museum and photographer (CC0), cut out with tools/cutout_puppets.py.
   ...[
-    ["lakshmana", "Lakshmana", "Ravana Chhaya figure"],
-    ["hanuman-rc", "Hanuman (Ravana Chhaya)", "Ravana Chhaya figure"],
-    ["tree", "Tree", "Ravana Chhaya figure"],
-    ["maricha", "Maricha, the golden deer", "Tholu bommalata figure"],
-    ["hanuman", "Hanuman", "Indian shadow puppet"],
-    ["indrajit", "Indrajit", "Indian shadow puppet"],
-    ["vibhishana", "Vibhishana", "Indian shadow puppet"],
-    ["ravana-hermit", "Ravana as a hermit", "Indian shadow puppet"],
-    ["rakshasa", "Rakshasa", "Indian shadow puppet"],
-    ["rakshasa-2", "Rakshasa (second)", "Indian shadow puppet"],
-    ["giant", "Giant of Lanka", "Indian shadow puppet"],
-    ["warrior", "Warrior of Lanka", "Indian shadow puppet"],
-    ["elephant", "War elephant", "Indian shadow puppet"],
-    ["tiger", "Tiger", "Indian shadow puppet"],
-    ["chariot", "Rama in his chariot", "Indian shadow puppet"],
-    ["clown", "Clown", "Indian shadow puppet"],
+    ["lakshmana", "Lakshmana", "Ravana Chhaya figure", "ravanachhaya"],
+    ["hanuman-rc", "Hanuman (Ravana Chhaya)", "Ravana Chhaya figure", "ravanachhaya"],
+    ["tree", "Tree", "Ravana Chhaya figure", "ravanachhaya"],
+    ["maricha", "Maricha, the golden deer", "Tholu bommalata figure", "tholu"],
+    // The museum does not record which tradition these come from: painted, translucent Indian figures.
+    ["hanuman", "Hanuman", "Indian shadow puppet", null],
+    ["indrajit", "Indrajit", "Indian shadow puppet", null],
+    ["vibhishana", "Vibhishana", "Indian shadow puppet", null],
+    ["ravana-hermit", "Ravana as a hermit", "Indian shadow puppet", null],
+    ["rakshasa", "Rakshasa", "Indian shadow puppet", null],
+    ["rakshasa-2", "Rakshasa (second)", "Indian shadow puppet", null],
+    ["giant", "Giant of Lanka", "Indian shadow puppet", null],
+    ["warrior", "Warrior of Lanka", "Indian shadow puppet", null],
+    ["elephant", "War elephant", "Indian shadow puppet", null],
+    ["tiger", "Tiger", "Indian shadow puppet", null],
+    ["chariot", "Rama in his chariot", "Indian shadow puppet", null],
+    ["clown", "Clown", "Indian shadow puppet", null],
   // These are painted, translucent figures; tools/punch_puppets.py gives each a solid, punched-leather shadow like
-  // a Tholpavakoothu figure's (the originals stay in assets/puppets/).
-  ].map(([file, name, source]) => ({ id: `img:${file}`, name, src: `assets/puppets/punched/${file}.webp`, flip: false, source })),
+  // a Tholpavakoothu figure's. The painted originals stay in assets/puppets/ and are shown when a figure is set to let
+  // the light through its colours (see imageURL in stage.js).
+  ].map(([file, name, source, tradition]) => ({
+    id: `img:${file}`, name, src: `assets/puppets/punched/${file}.webp`, colour: `assets/puppets/${file}.webp`, flip: false,
+    source, tradition,
+  })),
+  // Figures of the other traditions, photographed by Daderot (CC0 or public domain; see CREDITS.md and
+  // assets/puppets/sources.json), cut out with tools/cutout_puppets.py with their colours kept.
+  ...[
+    ["odisha-rama", "Rama (Ravana Chhaya)", "Ravana Chhaya figure", "ravanachhaya"],
+    ["odisha-sita", "Sita (Ravana Chhaya)", "Ravana Chhaya figure", "ravanachhaya"],
+    ["odisha-ravana", "Ravana (Ravana Chhaya)", "Ravana Chhaya figure", "ravanachhaya", true],
+    ["andhra-rama", "Rama (Tholu bommalata)", "Tholu bommalata figure", "tholu"],
+    ["andhra-sita", "Sita (Tholu bommalata)", "Tholu bommalata figure", "tholu"],
+    ["andhra-ravana", "Ravana (Tholu bommalata)", "Tholu bommalata figure", "tholu"],
+    ["andhra-animal", "Deer", "Tholu bommalata figure", "tholu"],
+    ["bali-kayon", "Fire kayon", "Wayang kulit figure (Bali)", "wayang"],
+    ["bali-23", "Kayon", "Wayang kulit figure (Bali)", "wayang"],
+    ["bali-24", "Knight", "Wayang kulit figure (Bali)", "wayang"],
+    ["bali-25", "Deity", "Wayang kulit figure (Bali)", "wayang"],
+    ["bali-26", "Lady", "Wayang kulit figure (Bali)", "wayang", true],
+    ["bali-27", "Kayon (painted)", "Wayang kulit figure (Bali)", "wayang"],
+    ["bali-28", "Ogre", "Wayang kulit figure (Bali)", "wayang", true],
+    ["china-xuxian", "Xu Xian", "Chinese shadow play figure", "chinese"],
+    ["china-whitesnake", "White Snake", "Chinese shadow play figure", "chinese", true],
+    ["china-greensnake", "Green Snake", "Chinese shadow play figure", "chinese", true],
+    ["china-fahai", "Fahai", "Chinese shadow play figure", "chinese", true],
+    ["china-weituo", "Weituo", "Chinese shadow play figure", "chinese"],
+    ["china-kuixing", "Kuixing", "Chinese shadow play figure", "chinese"],
+    ["karagoz-ermeni", "Ermeni, the Armenian", "Karagöz figure", "karagoz"],
+    ["karagoz-celebi", "Çelebi and a woman", "Karagöz figure", "karagoz", true],
+    ["karagoz-witch", "Witch", "Karagöz figure", "karagoz"],
+    ["karagoz-frog", "Karagöz as a frog", "Karagöz figure", "karagoz", true],
+    ["karagoz-donkey", "Karagöz as a turtle", "Karagöz figure", "karagoz"],
+    ["karagoz-ruhi", "Baby Ruhi", "Karagöz figure", "karagoz", true],
+  ].map(([file, name, source, tradition, flip = false]) => ({
+    id: `img:${file}`, name, src: `assets/puppets/${file}.webp`, flip, source, tradition,
+  })),
 ];
+
+// Each tradition's cast, most important first, in their places from left to right; as many as stand side by side on
+// that tradition's screen go on the cloth (see castItems), the rest wait in the Library. Togalu gombeyaata has no
+// labelled figures in the collection, so it borrows the museum's painted Indian figures, whose tradition is not
+// recorded.
+export const CASTS = {
+  tholpavakoothu: ["img:rama", "img:sita", "img:ganesh", "img:vishnu", "img:ravana"],
+  wayang: ["img:bali-24", "img:bali-26", "img:bali-kayon", "img:bali-25", "img:bali-28"],
+  chinese: ["img:china-xuxian", "img:china-whitesnake", "img:china-fahai", "img:china-greensnake", "img:china-weituo"],
+  karagoz: ["img:karagoz-frog", "img:karagoz-ermeni", "img:karagoz-celebi", "img:karagoz-witch", "img:karagoz-ruhi"],
+  tholu: ["img:andhra-rama", "img:andhra-sita", "img:maricha", "img:andhra-ravana", "img:andhra-animal"],
+  togalu: ["img:hanuman", "img:vibhishana", "img:indrajit", "img:giant", "img:rakshasa"],
+  ravanachhaya: ["img:odisha-rama", "img:odisha-sita", "img:hanuman-rc", "img:odisha-ravana", "img:lakshmana", "img:tree"],
+  custom: [],
+};
+
+// The cast laid out along the cloth, each on for the whole show, in the tradition's figure look. A figure is about
+// three quarters as wide as it is tall, so only as many as stand side by side on this screen are placed.
+export function castItems(key, duration) {
+  const tr = TRADITIONS[key] || TRADITIONS.custom;
+  const room = Math.floor(tr.screen.w / (0.75 * (tr.screen.figure / 100) * tr.screen.h));
+  const ids = (CASTS[key] || []).slice(0, Math.max(1, Math.min(5, room)));
+  const style = tr.style;
+  return ids.map((id, i) => {
+    const img = BUILTIN_IMAGES.find((b) => b.id === id);
+    const x = Math.round(240 + ((1920 - 480) * (i + 0.5)) / ids.length);
+    return makePuppet(id, img.name.replace(/ \(.*\)$/, ""), i, { position: [x, 648] },
+      { flip: img.flip, render: style, start: 0, end: duration });
+  });
+}
 
 // Sounds are generated in the browser (see audio.js), so they carry no licence terms.
 export const SOUNDS = [

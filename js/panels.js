@@ -3,9 +3,9 @@ import {
   $, S, FPS, FW, FH, GROUPS, ICON, K, checkpoint, clamp, commit, dropCheckpoint, emit, esc, getProp, itemById, keyIndexAt, kindOf,
   lightById, ownerOf, parseTc, propDef, propDefault, round1, selectedOwner, setValue, snapT, sortKeys, tc, toast, uid, valueAt,
 } from "./core.js";
-import { BUILTIN_IMAGES, FX_TYPES, LIGHT_MOVES, LIGHT_TYPES, MOVES, PALETTE, SOUNDS, TRADITIONS, applyMove, makeLight } from "./library.js";
+import { BUILTIN_IMAGES, CASTS, FX_TYPES, LIGHT_MOVES, LIGHT_TYPES, MOVES, PALETTE, SOUNDS, TRADITIONS, applyMove, makeLight } from "./library.js";
 import {
-  addAudio, addFx, addLight, addLightRow, addPuppet, addTitle, applyTradition, moveTrack, removeSelected, select, setClip,
+  addAudio, addFx, addLight, addLightRow, addPuppet, addTitle, applyCast, applyTradition, moveTrack, removeSelected, select, setClip,
 } from "./actions.js";
 import { imageURL } from "./stage.js";
 import { CUTS, canParent, cutFigure, cutParts, isCut, removePart } from "./rig.js";
@@ -343,6 +343,7 @@ export function buildShow() {
     <div class="frow">
       <select class="select grow" data-set="tradition">${Object.entries(TRADITIONS).map(([k, t]) => `<option value="${k}"${k === P.tradition ? " selected" : ""}>${t.label}</option>`).join("")}</select>
       <button class="btn" data-act="apply-tradition" title="Replace the lights, cloth colour and figure style with this tradition's setup">Apply setup</button>
+      <button class="btn" data-act="apply-cast" title="Replace the figures on the cloth with this tradition's own figures"${(CASTS[P.tradition] || []).length ? "" : " disabled"}>Use its figures</button>
     </div>
     <p class="about">${esc(tr.about)} ${tr.link ? `<a href="${tr.link}" target="_blank" rel="noopener">Read more</a>` : ""}</p>
     <p class="muted small">A setup is a starting point for lamp count, placing and figure style. Adjust it to your own stage.</p>
@@ -625,7 +626,7 @@ function libraryHTML() {
     <div class="lib-h">Characters <button class="link" data-act="import-media">Import image…</button></div>
     ${[...new Set(BUILTIN_IMAGES.map((b) => b.source))].map((src) => {
       const tiles = BUILTIN_IMAGES.filter((b) => b.source === src).map((b) => tile(b.id, b.name, b.src)).join("");
-      return tiles ? `<div class="lib-sub">${esc(src.replace(" figure", "").replace("Indian shadow puppet", "Other Indian shadow puppets"))}</div><div class="lib-grid">${tiles}</div>` : "";
+      return tiles ? `<div class="lib-sub">${esc(src.replace(" figure", "").replace("Indian shadow puppet", "Other Indian shadow puppets (tradition not recorded)"))}</div><div class="lib-grid">${tiles}</div>` : "";
     }).join("")}
     ${userImgs.length ? `<div class="lib-sub">Imported</div><div class="lib-grid">${userImgs.map((a) => tile(a.id, a.name, imageURL(a.id))).join("")}</div>` : ""}
     <div class="lib-h">Sound and music <button class="link" data-act="import-media">Import audio…</button></div>
@@ -827,6 +828,11 @@ export function handleAct(el) {
       if (type === "light") return select("light", el.dataset.id);
       const a = P.assets[el.dataset.id];
       return a.kind === "image" ? addPuppet(a.id) : addAudio(a.id);
+    }
+    case "apply-cast": {
+      const tr = TRADITIONS[P.tradition];
+      if (!confirm(`Replace the figures on the cloth with ${tr.label}'s own? Their keyframes and cut parts go with them; lights, sounds and scenes stay, and you can undo this.`)) return;
+      return applyCast(P.tradition);
     }
     case "apply-tradition": {
       const tr = TRADITIONS[P.tradition];

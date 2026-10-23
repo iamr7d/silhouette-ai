@@ -3,9 +3,11 @@ import { $, S, FW, FH, assetURL, clamp, esc, getProp, hexRgb, valueAt, visibleAt
 import { BUILTIN_IMAGES, LIGHT_TYPES } from "./library.js";
 import { cutParts, editorHTML, figureHTML, isCut, poseParts } from "./rig.js";
 
-export function imageURL(asset) {
+export function imageURL(asset, render) {
   const b = BUILTIN_IMAGES.find((x) => x.id === asset);
-  return b ? b.src : assetURL[asset] || "";
+  if (!b) return assetURL[asset] || "";
+  // a punched figure shows its painted original when the light comes through its colours
+  return b.colour && (render === "translucent" || render === "colour") ? b.colour : b.src;
 }
 
 let lightCanvas;
@@ -59,7 +61,7 @@ export function syncPuppets() {
     const parts = (it.parts || []).filter((p) => !isCut(p));
     const cuts = cutParts(it);
     const editing = S.rigEdit && S.rigEdit.item === it.id ? `${S.rigEdit.part}` : "";
-    const sig = [imageURL(it.asset), ...parts.map((p) => `${p.id}:${imageURL(p.asset)}:${p.z}`),
+    const sig = [imageURL(it.asset, it.render), ...parts.map((p) => `${p.id}:${imageURL(p.asset)}:${p.z}`),
       JSON.stringify(cuts.map((p) => [p.id, p.poly, p.pivot, p.parent, p.stick])), editing].join("|");
     let el = puppetEls.get(it.id);
     if (!el) {
@@ -70,7 +72,7 @@ export function syncPuppets() {
     }
     if (el.dataset.sig !== sig) {
       el.dataset.sig = sig;
-      const src = imageURL(it.asset);
+      const src = imageURL(it.asset, it.render);
       const partImg = (p) => `<img class="part ${p.z === "back" ? "back" : "front"}" data-part="${p.id}" src="${imageURL(p.asset)}" alt="" draggable="false">`;
       el.innerHTML =
         parts.filter((p) => p.z === "back").map(partImg).join("") +

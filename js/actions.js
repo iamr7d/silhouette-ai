@@ -3,7 +3,7 @@ import {
   S, FPS, assetURL, blobs, checkpoint, clamp, commit, emit, getBlob, itemById, putBlob, snapT, toast, uid, withoutFire,
 } from "./core.js";
 import {
-  BUILTIN_IMAGES, FX_TYPES, LIGHT_TYPES, SOUNDS, TRADITIONS, fadeCard, makeAudio, makeFx, makeLight, makePuppet, makeTitle,
+  BUILTIN_IMAGES, FX_TYPES, LIGHT_TYPES, SOUNDS, TRADITIONS, castItems, fadeCard, makeAudio, makeFx, makeLight, makePuppet, makeTitle,
 } from "./library.js";
 import { buffers, decodeFile, loadAudioAsset, registerBuffer } from "./audio.js";
 
@@ -133,6 +133,21 @@ export function moveTrack(dir) {
   checkpoint();
   [items[i], items[j]] = [items[j], items[i]];
   commit();
+}
+
+// Replace the show's figures with the tradition's cast (keyframes and parts of the old figures go with them).
+export function applyCast(key) {
+  const tr = TRADITIONS[key];
+  if (!tr) return;
+  checkpoint();
+  const P = S.project;
+  const at = P.items.findIndex((i) => i.kind === "puppet");
+  const cast = castItems(key, P.duration);
+  P.items = P.items.filter((i) => i.kind !== "puppet");
+  P.items.splice(at < 0 ? 0 : Math.min(at, P.items.length), 0, ...cast);
+  if (S.sel && S.sel.type === "item" && !P.items.some((i) => i.id === S.sel.id)) S.sel = null;
+  commit();
+  toast(cast.length ? `${tr.label}: ${cast.length} figures on the cloth` : `${tr.label} has no figures of its own`);
 }
 
 export function applyTradition(key) {
